@@ -1,229 +1,413 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>PRANK DEMO Wallet (Multi-Wallet SPA)</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wallet UI Replica</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; background: #f6f7fb; color: #1a1a1a; }
+    .header { padding: 20px; text-align: center; font-size: 20px; font-weight: 600; background: white; position: sticky; top: 0; }
+    .search { margin: 15px; padding: 10px; border-radius: 12px; border: 1px solid #ccc; width: calc(100% - 30px); }
+    .wallet-section { text-align: left; padding: 0 20px; }
+    .balance { font-size: 36px; font-weight: bold; }
+    .actions { display: flex; justify-content: space-around; padding: 20px 0; background: white; }
+    .action { display: flex; flex-direction: column; align-items: center; font-size: 14px; cursor: pointer; }
+    .circle { width: 55px; height: 55px; border-radius: 50%; background: #eee; display: flex; justify-content: center; align-items: center; margin-bottom: 8px; font-size: 22px; }
+    .crypto-list { padding: 0 20px 80px 20px; }
+    .coin { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #ddd; cursor: pointer; }
+    .coin-info { display: flex; align-items: center; gap: 12px; }
+    .coin img { width: 32px; height: 32px; }
+    .footer { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ccc; }
+    .footer div { text-align: center; font-size: 14px; }
 
-<style>
-  body{
-    margin:0; font-family:Inter,Segoe UI; background:#08120a; color:#e8fff1;
-  }
-  .page{ display:none; padding:20px; }
-  .active{ display:block; }
+    /* pages */
+    #btcPage { display:none; padding:20px; }
+    #sendBTC { position: fixed; inset: 0; background: white; display: none; flex-direction: column; padding: 20px; z-index: 99999; overflow-y: auto; }
+    #confirmSend { position:fixed; inset:0; background:#ffffff; display:none; flex-direction:column; padding:20px; z-index:999999; overflow-y:auto; }
 
-  h1{ margin-top:0; color:#00e676; }
-  input{
-    width:100%; padding:12px; border-radius:8px; border:none;
-    margin-top:8px; background:#0c1f16; color:white;
-  }
-  button{
-    margin-top:12px; width:100%; padding:12px;
-    border:none; border-radius:8px; cursor:pointer; background:#00e676; font-weight:bold;
-  }
-  .asset{
-    background:#0c1f16; padding:12px; margin-bottom:10px; border-radius:8px;
-    display:flex; justify-content:space-between;
-  }
-  .tx{
-    padding:10px; background:#0c1f16; margin-bottom:8px; border-radius:8px;
-    display:flex; justify-content:space-between;
-  }
-  .success{ color:#7dff9c; font-weight:bold; }
-  .nav-btn{
-    background:transparent; border:1px solid #00e676; color:#00e676;
-    padding:8px 12px; border-radius:8px; cursor:pointer; margin-top:10px;
-  }
-</style>
+    /* processing popup */
+    #processingPopup { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000000; }
+    .processing-card { background: #fff; padding: 24px; border-radius: 14px; width: calc(100% - 64px); max-width: 360px; text-align: center; }
+    .spinner { width: 56px; height: 56px; border-radius: 50%; border: 6px solid #e6e6e6; border-top-color: #0a53ff; margin: 0 auto 14px; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .processing-title { font-weight:700; margin-bottom:8px; }
+    .processing-text { color:#555; font-size:14px; }
+    .processing-actions { margin-top:18px; }
+    .btn { padding:12px 16px; border-radius:10px; border:none; cursor:pointer; }
+    .btn.primary { background:#0a53ff; color:#fff; }
+    .btn.ghost { background:#f3f3f3; color:#222; }
+
+    /* tx details page */
+    #txDetails { display:none; padding:20px; }
+    .tx-row { display:flex; justify-content:space-between; margin-bottom:10px; }
+    .status-pending { color:#f59e0b; font-weight:700; }
+    .status-success { color:#10b981; font-weight:700; }
+
+    /* responsive */
+    @media(min-width:700px){ .container{max-width:720px;margin:0 auto} }
+  </style>
 </head>
 <body>
+  <div class="header">Home</div>
 
-<!-- ============================= -->
-<!-- PAGE 1: KEY LOGIN PAGE       -->
-<!-- ============================= -->
-<div id="loginPage" class="page active">
-  <h1>PRANK DEMO Wallet</h1>
-  <p>Enter your demo key (1–20). Example: <b>demo-key-7</b></p>
+  <input class="search" placeholder="Search" />
 
-  <input id="keyInput" placeholder="Enter demo key">
-  <button onclick="openWallet()">Open Wallet</button>
+  <div class="wallet-section">
+    <div>Main Wallet 4</div>
+    <div class="balance" id="mainBalance">$0.00</div>
+  </div>
 
-  <button class="nav-btn" onclick="alert(keys.join('\\n'))">Show All Keys</button>
-</div>
+  <div class="actions">
+    <div class="action"><div class="circle">↑</div>Send</div>
+    <div class="action"><div class="circle">↓</div>Receive</div>
+    <div class="action"><div class="circle">▣</div>Buy</div>
+    <div class="action"><div class="circle">🏦</div>Sell</div>
+    <div class="action"><div class="circle">⟳</div>History</div>
+  </div>
 
-<!-- ============================= -->
-<!-- 20 Wallet Containers Hidden   -->
-<!-- ============================= -->
-<div id="walletContainer" class="page">
-  <button class="nav-btn" onclick="goHome()">← Back</button>
-  <h1 id="walletTitle"></h1>
+  <div class="crypto-list">
+    <div class="coin" id="btcRow">
+      <div class="coin-info">
+        <!-- use uploaded local image path provided by the user -->
+        <img src="/mnt/data/WhatsApp Image 2025-11-24 at 10.41.42 PM.jpeg" alt="BTC" />
+        <div>
+          <div>BTC</div>
+          <small id="btcPriceText">Loading...</small>
+        </div>
+      </div>
+      <div id="btcWalletBalance">$0.00</div>
+    </div>
 
-  <h3>Balances</h3>
-  <div id="balanceList"></div>
+    <div class="coin">
+      <div class="coin-info"><img src="https://cryptologos.cc/logos/solana-sol-logo.png" /><div><div>SOL</div><small>$137.88 +4.94%</small></div></div><div>$0.00</div>
+    </div>
 
-  <h3>Send (Fake Tx)</h3>
-  <select id="sendAsset" style="padding:8px; border-radius:8px; width:100%; background:#0c1f16; color:white;">
-    <option>BTC</option>
-    <option>ETH</option>
-    <option>BNB</option>
-    <option>MATIC</option>
-    <option>USDT</option>
-  </select>
+    <div class="coin">
+      <div class="coin-info"><img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" /><div><div>ETH</div><small>$2,915.40 +2.85%</small></div></div><div>$0.00</div>
+    </div>
 
-  <input id="sendAmount" placeholder="Amount">
-  <input id="sendTo" placeholder="Send to (any text)">
-  <button onclick="sendTx()">Send</button>
-  <div id="sendStatus"></div>
+    <div class="coin">
+      <div class="coin-info"><img src="https://cryptologos.cc/logos/bnb-bnb-logo.png" /><div><div>BNB</div><small>$860.07 +1.23%</small></div></div><div>$0.00</div>
+    </div>
 
-  <h3>Transaction History</h3>
-  <div id="txHistory"></div>
-</div>
+    <div class="coin">
+      <div class="coin-info"><img src="https://cryptologos.cc/logos/trust-wallet-token-twt-logo.png" /><div><div>TWT</div><small>$1.07 +0.59%</small></div></div><div>$0.00</div>
+    </div>
 
+    <div class="coin">
+      <div class="coin-info"><img src="https://cryptologos.cc/logos/polygon-matic-logo.png" /><div><div>MATIC</div><small>$0.13 +0.75%</small></div></div><div>$0.00</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>Home</div>
+    <div>Swap</div>
+    <div>Earn</div>
+    <div>Discover</div>
+  </div>
+
+  <!-- BTC DETAIL PAGE -->
+  <div id="btcPage">
+    <div id="backBtn" style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:18px;margin-bottom:20px;">← Back</div>
+    <h2>Bitcoin</h2>
+    <div style="text-align:center;margin-top:20px;">
+      <img src='/mnt/data/WhatsApp Image 2025-11-24 at 10.41.42 PM.jpeg' width='80' alt='BTC logo' />
+      <h3 id="btcHoldings">0 BTC</h3>
+      <p id="btcHoldingsFiat">≈ $0.00</p>
+    </div>
+
+    <div style='display:flex;justify-content:space-around;margin:20px 0;'>
+      <div class='action' id="sendFromBTC"><div class='circle'>↑</div>Send</div>
+      <div class='action'><div class='circle'>↓</div>Receive</div>
+      <div class='action'><div class='circle'>▣</div>Buy</div>
+      <div class='action'><div class='circle'>⇄</div>Swap</div>
+      <div class='action'><div class='circle'>🏦</div>Sell</div>
+    </div>
+
+    <button style='background:#0a53ff;color:white;width:100%;padding:14px;border:none;border-radius:12px;font-size:16px;'>Buy BTC</button>
+
+    <div style='margin-top:30px;border-top:1px solid #ddd;padding-top:15px;'>
+      <strong>Current BTC price</strong>
+      <div id="btcPriceDetail">Loading...</div>
+    </div>
+  </div>
+
+  <!-- SEND BTC POPUP -->
+  <div id="sendBTC">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h2 style="margin:0;">Send BTC</h2>
+      <div id="closeSend" style="font-size:24px;cursor:pointer;">✕</div>
+    </div>
+
+    <div style="margin-top:25px;">
+      <label>Address or Domain Name</label>
+      <input id="sendAddress" type="text" placeholder="Search or Enter" style="width:100%;padding:14px;margin-top:6px;border-radius:12px;border:1px solid #ccc;font-size:16px;">
+    </div>
+
+    <div style="margin-top:25px;">
+      <label>Amount</label>
+      <input id="btcAmount" type="text" placeholder="BTC Amount" style="width:100%;padding:14px;margin-top:6px;border-radius:12px;border:1px solid #ccc;font-size:16px;">
+      <div id="btcAmountFiat" style="color:#777;margin-top:5px;">≈ $0.00</div>
+    </div>
+
+    <button id="nextBtn" style="margin-top:40px;width:100%;padding:16px;font-size:17px;border:none;background:#e5e6eb;border-radius:14px;color:#777;">Next</button>
+  </div>
+
+  <!-- CONFIRM SEND PAGE -->
+  <div id="confirmSend">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div id="backToSend" style="font-size:22px;cursor:pointer;">←</div>
+      <h2 style="margin:0;font-weight:600;">Transfer</h2>
+      <div></div>
+    </div>
+
+    <div id="confirmAmount" style="font-size:26px;font-weight:700;text-align:center;">0 BTC</div>
+    <div id="confirmFiat" style="color:#666;text-align:center;margin-bottom:25px;">$0.00</div>
+
+    <div style="background:#f3f3f3;border-radius:14px;padding:18px;margin-bottom:20px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+        <span>Asset</span><span>Bitcoin (BTC)</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+        <span>Wallet</span><span>Main Wallet</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;">
+        <span>To</span><span id="confirmTo">Address</span>
+      </div>
+    </div>
+
+    <div style="background:#f3f3f3;border-radius:14px;padding:18px;margin-bottom:30px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+        <span>Network fee</span><span id="confirmFee">0 BTC</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-weight:600;">
+        <span>Max Total</span><span id="confirmTotal">$0.00</span>
+      </div>
+    </div>
+
+    <button id="confirmBtn" style="background:#2ecc71;color:white;border:none;width:100%;padding:16px;border-radius:14px;font-size:18px;">Confirm</button>
+  </div>
+
+  <!-- PROCESSING POPUP (Option A style) -->
+  <div id="processingPopup">
+    <div class="processing-card">
+      <div class="spinner" aria-hidden="true"></div>
+      <div class="processing-title">Processing</div>
+      <div class="processing-text">Transaction in progress! Blockchain validation is underway. This may take a few minutes.</div>
+      <div class="processing-actions">
+        <button id="processingDetails" class="btn primary">Transaction Details</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRANSACTION DETAILS PAGE -->
+  <div id="txDetails">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+      <div id="txBack" style="cursor:pointer;font-weight:700;">◀ Back</div>
+      <div id="txStatus" class="status-pending">Pending</div>
+    </div>
+
+    <div style="font-size:20px;font-weight:700;margin-bottom:8px;" id="txAmount">0 BTC</div>
+    <div style="color:#666;margin-bottom:16px;" id="txFiat">$0.00</div>
+
+    <div style="background:#f3f3f3;border-radius:12px;padding:12px;margin-bottom:12px;">
+      <div class="tx-row"><span>To</span><span id="txTo">Address</span></div>
+      <div class="tx-row"><span>Fee</span><span id="txFee">0 BTC</span></div>
+      <div class="tx-row"><span>Total</span><span id="txTotal">$0.00</span></div>
+      <div class="tx-row"><span>Timestamp</span><span id="txTime">-</span></div>
+    </div>
+
+    <button id="txDone" class="btn primary">Done</button>
+  </div>
 
 <script>
-/* ============================================
-   20 UNIQUE KEYS
-============================================ */
-const keys = [
-  "demo-key-1","demo-key-2","demo-key-3","demo-key-4","demo-key-5",
-  "demo-key-6","demo-key-7","demo-key-8","demo-key-9","demo-key-10",
-  "demo-key-11","demo-key-12","demo-key-13","demo-key-14","demo-key-15",
-  "demo-key-16","demo-key-17","demo-key-18","demo-key-19","demo-key-20"
-];
+let btcPrice = 0;
 
-/* ============================================
-   EDITABLE BALANCES FOR EACH WALLET
-   Each wallet gets its own numbers
-============================================ */
-const wallets = {};
-
-for (let i = 1; i <= 20; i++){
-  wallets["demo-key-" + i] = {
-    BTC: (Math.random()*0.4+0.005).toFixed(6),
-    ETH: (Math.random()*3+0.05).toFixed(4),
-    BNB: (Math.random()*5+0.1).toFixed(3),
-    MATIC: (Math.random()*300+1).toFixed(2),
-    USDT: (Math.random()*1500+5).toFixed(2),
-    tx: []  // transaction history
-  };
-}
-
-let currentKey = null;
-
-/* ============================================
-   NAVIGATION
-============================================ */
-function goHome(){
-  showPage("loginPage");
-}
-
-function showPage(id){
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-}
-
-/* ============================================
-   OPEN WALLET
-============================================ */
-function openWallet(){
-  const key = document.getElementById("keyInput").value.trim();
-
-  if(!keys.includes(key)){
-    alert("Invalid key. Use demo-key-1 to demo-key-20.");
-    return;
-  }
-
-  currentKey = key;
-
-  document.getElementById("walletTitle").innerText =
-    "Wallet for: " + currentKey;
-
-  refreshBalances();
-  refreshTx();
-
-  showPage("walletContainer");
-}
-
-/* ============================================
-   BALANCES
-============================================ */
-function refreshBalances(){
-  const wallet = wallets[currentKey];
-  const box = document.getElementById("balanceList");
-  box.innerHTML = "";
-
-  for (const a in wallet){
-    if(a === "tx") continue;
-    box.innerHTML += `
-      <div class="asset">
-        <div><b>${a}</b></div>
-        <div>${wallet[a]}</div>
-      </div>
-    `;
+// Fetch live BTC price (non-blocking)
+async function loadBTCPrice() {
+  try {
+    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+    const data = await res.json();
+    btcPrice = data.bitcoin.usd;
+    document.getElementById("btcPriceText").innerText = `$${btcPrice.toLocaleString()} (Live)`;
+    document.getElementById("btcPriceDetail").innerText = `$${btcPrice.toLocaleString()}`;
+  } catch (e) {
+    document.getElementById("btcPriceText").innerText = "Price unavailable";
+    const el = document.getElementById("btcPriceDetail"); if(el) el.innerText = "Unavailable";
   }
 }
+loadBTCPrice();
 
-/* ============================================
-   SEND FAKE TRANSACTION
-============================================ */
-function sendTx(){
-  const asset = document.getElementById("sendAsset").value;
-  const amount = document.getElementById("sendAmount").value;
-  const to = document.getElementById("sendTo").value;
+// Page elements
+const btcRow = document.getElementById('btcRow');
+const btcPage = document.getElementById('btcPage');
+const sendBTC = document.getElementById('sendBTC');
+const confirmSend = document.getElementById('confirmSend');
+const backBtn = document.getElementById('backBtn');
+const sendFromBTC = document.getElementById('sendFromBTC');
+const closeSend = document.getElementById('closeSend');
+const backToSend = document.getElementById('backToSend');
+const confirmBtn = document.getElementById('confirmBtn');
 
-  if(amount <= 0){
-    alert("Enter valid amount.");
-    return;
-  }
+// Processing popup elements
+const processingPopup = document.getElementById('processingPopup');
+const processingDetails = document.getElementById('processingDetails');
 
-  const wallet = wallets[currentKey];
+// Tx details
+const txDetails = document.getElementById('txDetails');
+const txBack = document.getElementById('txBack');
+const txStatus = document.getElementById('txStatus');
+const txAmount = document.getElementById('txAmount');
+const txFiat = document.getElementById('txFiat');
+const txTo = document.getElementById('txTo');
+const txFee = document.getElementById('txFee');
+const txTotal = document.getElementById('txTotal');
+const txTime = document.getElementById('txTime');
+const txDone = document.getElementById('txDone');
 
-  // Subtract (can even go negative because it's a prank)
-  wallet[asset] = (parseFloat(wallet[asset]) - parseFloat(amount)).toFixed(6);
+// Show BTC page
+btcRow.addEventListener('click', () => {
+  hideMain();
+  btcPage.style.display = 'block';
+});
+backBtn.addEventListener('click', () => showMain());
 
-  wallet.tx.push({
-    asset,
-    amount,
-    to,
-    time: new Date().toLocaleString()
-  });
-
-  document.getElementById("sendStatus").innerHTML =
-    `<p class='success'>Transaction Successful ✓</p>`;
-
-  refreshBalances();
-  refreshTx();
-
-  document.getElementById("sendAmount").value = "";
-  document.getElementById("sendTo").value = "";
-
-  setTimeout(()=>{ document.getElementById("sendStatus").innerHTML = "" }, 3500);
+function hideMain() {
+  document.querySelector('.header').style.display = 'none';
+  document.querySelector('.search').style.display = 'none';
+  document.querySelector('.wallet-section').style.display = 'none';
+  document.querySelector('.actions').style.display = 'none';
+  document.querySelector('.crypto-list').style.display = 'none';
+  document.querySelector('.footer').style.display = 'none';
+}
+function showMain() {
+  document.querySelector('.header').style.display = '';
+  document.querySelector('.search').style.display = '';
+  document.querySelector('.wallet-section').style.display = '';
+  document.querySelector('.actions').style.display = '';
+  document.querySelector('.crypto-list').style.display = '';
+  document.querySelector('.footer').style.display = '';
+  btcPage.style.display = 'none';
 }
 
-/* ============================================
-   TRANSACTION HISTORY
-============================================ */
-function refreshTx(){
-  const wallet = wallets[currentKey];
-  const box = document.getElementById("txHistory");
-  box.innerHTML = "";
+// Send flow
+sendFromBTC.addEventListener('click', () => {
+  btcPage.style.display = 'none';
+  sendBTC.style.display = 'flex';
+});
+closeSend.addEventListener('click', () => {
+  sendBTC.style.display = 'none';
+  btcPage.style.display = 'block';
+});
 
-  wallet.tx.slice().reverse().forEach(t=>{
-    box.innerHTML += `
-      <div class="tx">
-        <div>
-          <b>${t.asset}</b> ${t.amount}<br>
-          <small>${t.to}</small>
-        </div>
-        <div class="success">Success<br><small>${t.time}</small></div>
-      </div>
-    `;
-  });
+// amount handling
+const btcAmount = document.getElementById('btcAmount');
+const btcAmountFiat = document.getElementById('btcAmountFiat');
+const nextBtn = document.getElementById('nextBtn');
+const sendAddress = document.getElementById('sendAddress');
 
-  if(wallet.tx.length === 0){
-    box.innerHTML = "<p>No transactions yet</p>";
+btcAmount.addEventListener('input', () => {
+  const val = parseFloat(btcAmount.value) || 0;
+  btcAmountFiat.innerText = `≈ $${(val * btcPrice).toFixed(2)}`;
+  if (val > 0) {
+    nextBtn.style.background = '#4ade80';
+    nextBtn.style.color = '#000';
+    nextBtn.disabled = false;
+  } else {
+    nextBtn.style.background = '#e5e6eb';
+    nextBtn.style.color = '#777';
+    nextBtn.disabled = true;
   }
-}
+});
+
+nextBtn.addEventListener('click', () => {
+  const btc = parseFloat(btcAmount.value) || 0;
+  const usd = btc * btcPrice;
+  const fee = btc * 0.01;
+
+  document.getElementById('confirmAmount').innerText = `-${btc} BTC`;
+  document.getElementById('confirmFiat').innerText = `≈ $${usd.toFixed(2)}`;
+  document.getElementById('confirmFee').innerText = `${fee.toFixed(8)} BTC`;
+  document.getElementById('confirmTotal').innerText = `$${(usd + fee * btcPrice).toFixed(2)}`;
+  document.getElementById('confirmTo').innerText = sendAddress.value || 'No address';
+
+  sendBTC.style.display = 'none';
+  confirmSend.style.display = 'flex';
+});
+
+backToSend.addEventListener('click', () => {
+  confirmSend.style.display = 'none';
+  sendBTC.style.display = 'flex';
+});
+
+// Confirm -> Processing popup
+confirmBtn.addEventListener('click', () => {
+  // show processing popup
+  processingPopup.style.display = 'flex';
+
+  // disable background scrolling
+  document.body.style.overflow = 'hidden';
+
+  // automatically proceed to success after 3 seconds
+  setTimeout(() => {
+    // populate tx details and show tx details page with success
+    const btc = parseFloat(document.getElementById('confirmAmount').innerText.replace('-', '').replace(' BTC','')) || 0;
+    const feeText = document.getElementById('confirmFee').innerText || '0 BTC';
+    const fee = parseFloat(feeText.replace(' BTC','')) || 0;
+    const usdTotal = document.getElementById('confirmTotal').innerText.replace('$','') || '0';
+
+    txStatus.className = 'status-success';
+    txStatus.innerText = 'Successful';
+    txAmount.innerText = `${btc} BTC`;
+    txFiat.innerText = document.getElementById('confirmFiat').innerText || '';
+    txTo.innerText = document.getElementById('confirmTo').innerText || '';
+    txFee.innerText = feeText;
+    txTotal.innerText = document.getElementById('confirmTotal').innerText || '';
+    txTime.innerText = new Date().toLocaleString();
+
+    processingPopup.style.display = 'none';
+    document.body.style.overflow = '';
+
+    // hide confirm screen and show tx details
+    confirmSend.style.display = 'none';
+    txDetails.style.display = 'block';
+  }, 3000);
+});
+
+// Transaction Details button inside processing popup — shows pending details immediately
+processingDetails.addEventListener('click', () => {
+  // populate pending details
+  const btc = parseFloat(document.getElementById('confirmAmount').innerText.replace('-', '').replace(' BTC','')) || 0;
+  const feeText = document.getElementById('confirmFee').innerText || '0 BTC';
+
+  txStatus.className = 'status-pending';
+  txStatus.innerText = 'Pending';
+  txAmount.innerText = `${btc} BTC`;
+  txFiat.innerText = document.getElementById('confirmFiat').innerText || '';
+  txTo.innerText = document.getElementById('confirmTo').innerText || '';
+  txFee.innerText = feeText;
+  txTotal.innerText = document.getElementById('confirmTotal').innerText || '';
+  txTime.innerText = new Date().toLocaleString();
+
+  processingPopup.style.display = 'none';
+  document.body.style.overflow = '';
+  confirmSend.style.display = 'none';
+  txDetails.style.display = 'block';
+});
+
+// tx details actions
+txBack.addEventListener('click', () => {
+  txDetails.style.display = 'none';
+  showMain();
+});
+
+txDone.addEventListener('click', () => {
+  txDetails.style.display = 'none';
+  showMain();
+});
+
+// ensure initial state
+showMain();
 </script>
 
 </body>
