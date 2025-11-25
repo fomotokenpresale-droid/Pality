@@ -1,354 +1,230 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>PRANK / DEMO — Fake Multi Wallet (Local Only)</title>
+<meta charset="UTF-8">
+<title>PRANK DEMO Wallet (Multi-Wallet SPA)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-  :root{
-    --bg:#07100a; --card:#0b1a12; --accent:#00c853; --muted:#9aa9a0; --glass: rgba(255,255,255,0.03);
-    --text:#e6f7ee;
-  }
-  *{box-sizing:border-box}
   body{
-    margin:0; font-family:Inter,Segoe UI,Roboto,Arial; background:linear-gradient(180deg,#04110a,#07100a); color:var(--text);
-    -webkit-font-smoothing:antialiased;
+    margin:0; font-family:Inter,Segoe UI; background:#08120a; color:#e8fff1;
   }
-  .wrap{max-width:980px;margin:28px auto;padding:20px;}
-  header{display:flex;align-items:center;gap:16px}
-  .badge{background:var(--accent);color:#00210b;padding:6px 10px;border-radius:8px;font-weight:700}
-  h1{margin:0;font-size:20px}
-  p.lead{color:var(--muted);margin:6px 0 18px}
-  .card{background:linear-gradient(180deg,var(--card), #082219);padding:16px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.6);margin-bottom:18px}
-  .login{display:flex;gap:8px;flex-wrap:wrap}
-  input[type="text"]{padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:var(--glass);color:var(--text);min-width:260px}
-  button{background:var(--accent);border:none;color:#00210b;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
-  .wallet-grid{display:grid;grid-template-columns:1fr 320px;gap:14px}
-  .balances {display:grid;gap:10px}
-  .asset{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:rgba(255,255,255,0.02)}
-  .asset .left{display:flex;gap:12px;align-items:center}
-  .dot{width:40px;height:40px;border-radius:8px;background:rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;font-weight:700}
-  .muted{color:var(--muted);font-size:13px}
-  .send-box{display:flex;flex-direction:column;gap:8px}
-  label{font-size:13px;color:var(--muted)}
-  input.amount, input.to {padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)}
-  .txs{max-height:260px;overflow:auto;padding:8px;display:flex;flex-direction:column;gap:8px}
-  .tx{padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);display:flex;justify-content:space-between;align-items:center}
-  .success{color:#9be7b6;font-weight:700}
-  footer{margin-top:16px;color:var(--muted);font-size:13px}
-  .small{font-size:12px;color:var(--muted)}
-  /* responsive */
-  @media (max-width:880px){ .wallet-grid{grid-template-columns:1fr} .card{padding:12px} }
+  .page{ display:none; padding:20px; }
+  .active{ display:block; }
+
+  h1{ margin-top:0; color:#00e676; }
+  input{
+    width:100%; padding:12px; border-radius:8px; border:none;
+    margin-top:8px; background:#0c1f16; color:white;
+  }
+  button{
+    margin-top:12px; width:100%; padding:12px;
+    border:none; border-radius:8px; cursor:pointer; background:#00e676; font-weight:bold;
+  }
+  .asset{
+    background:#0c1f16; padding:12px; margin-bottom:10px; border-radius:8px;
+    display:flex; justify-content:space-between;
+  }
+  .tx{
+    padding:10px; background:#0c1f16; margin-bottom:8px; border-radius:8px;
+    display:flex; justify-content:space-between;
+  }
+  .success{ color:#7dff9c; font-weight:bold; }
+  .nav-btn{
+    background:transparent; border:1px solid #00e676; color:#00e676;
+    padding:8px 12px; border-radius:8px; cursor:pointer; margin-top:10px;
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="badge">PRANK DEMO</div>
-    <div>
-      <h1>Prank Multi-Wallet — Demo Only</h1>
-      <p class="lead">This is a local-only prank/demo. <strong>Not a real wallet. Do not use with real funds or real keys.</strong></p>
-    </div>
-  </header>
 
-  <div class="card">
-    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-      <div style="flex:1;">
-        <div class="small">Enter one of the demo keys (case-sensitive). Example keys are <code>demo-key-1</code> … <code>demo-key-20</code>.</div>
-        <div class="login" style="margin-top:8px">
-          <input id="keyInput" type="text" placeholder="Enter demo key, e.g. demo-key-1" />
-          <button id="openBtn">Open Demo Wallet</button>
-          <button id="showKeysBtn" style="background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text)">Show keys</button>
-        </div>
-      </div>
-      <div style="min-width:220px;text-align:right">
-        <div class="muted">Active demo wallets:</div>
-        <div id="activeInfo" class="small" style="margin-top:6px">— none opened —</div>
-      </div>
-    </div>
-  </div>
+<!-- ============================= -->
+<!-- PAGE 1: KEY LOGIN PAGE       -->
+<!-- ============================= -->
+<div id="loginPage" class="page active">
+  <h1>PRANK DEMO Wallet</h1>
+  <p>Enter your demo key (1–20). Example: <b>demo-key-7</b></p>
 
-  <div id="walletArea" style="display:none">
-    <div class="wallet-grid">
-      <div>
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <div class="muted">Wallet key</div>
-              <div id="walletKey" style="font-weight:800"></div>
-              <div class="small muted" id="walletIndex"></div>
-            </div>
-            <div style="text-align:right">
-              <div class="muted">Total assets (demo)</div>
-              <div id="totalUsd" style="font-weight:800">—</div>
-            </div>
-          </div>
+  <input id="keyInput" placeholder="Enter demo key">
+  <button onclick="openWallet()">Open Wallet</button>
 
-          <div style="margin-top:12px" class="balances" id="balancesList">
-            <!-- assets injected here -->
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:12px">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <div class="muted">Send (simulated)</div>
-              <div class="small">Transactions are simulated locally and always show success.</div>
-            </div>
-            <div class="small muted">Local only • No network calls</div>
-          </div>
-
-          <div style="margin-top:12px" class="send-box">
-            <label>Asset</label>
-            <select id="assetSelect" class="amount">
-              <option value="BTC">BTC</option>
-              <option value="ETH">ETH</option>
-              <option value="BNB">BNB</option>
-              <option value="MATIC">MATIC</option>
-              <option value="USDT">USDT</option>
-            </select>
-
-            <label>Amount</label>
-            <input id="amountInput" class="amount" type="text" placeholder="e.g. 0.01" />
-
-            <label>To (address) — any text</label>
-            <input id="toInput" class="to" type="text" placeholder="Recipient address (demo only)" />
-
-            <div style="display:flex;gap:8px;align-items:center">
-              <button id="sendBtn">Send (simulate)</button>
-              <div id="sendStatus" class="small muted"></div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <div>
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <div class="muted">Transaction history (local)</div>
-              <div class="small muted">Newest first</div>
-            </div>
-            <div>
-              <button id="resetBtn" style="background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text)">Reset wallet</button>
-            </div>
-          </div>
-
-          <div id="txs" class="txs" style="margin-top:12px">
-            <!-- txs -->
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:12px">
-          <div class="muted">Edit demo data</div>
-          <div class="small muted">Open <code>accounts</code> in the code to change initial balances and demo keys.</div>
-          <pre class="small" style="background:rgba(0,0,0,0.15);padding:8px;border-radius:8px;margin-top:8px">Example keys: demo-key-1 … demo-key-20</pre>
-        </div>
-      </div>
-    </div>
-
-    <footer>
-      <div style="margin-top:12px">Disclaimer: This is a PRANK / DEMO only. It does not connect to any blockchain, it does not manage real keys, and it must not be used to impersonate real wallet software.</div>
-    </footer>
-  </div>
+  <button class="nav-btn" onclick="alert(keys.join('\\n'))">Show All Keys</button>
 </div>
 
+<!-- ============================= -->
+<!-- 20 Wallet Containers Hidden   -->
+<!-- ============================= -->
+<div id="walletContainer" class="page">
+  <button class="nav-btn" onclick="goHome()">← Back</button>
+  <h1 id="walletTitle"></h1>
+
+  <h3>Balances</h3>
+  <div id="balanceList"></div>
+
+  <h3>Send (Fake Tx)</h3>
+  <select id="sendAsset" style="padding:8px; border-radius:8px; width:100%; background:#0c1f16; color:white;">
+    <option>BTC</option>
+    <option>ETH</option>
+    <option>BNB</option>
+    <option>MATIC</option>
+    <option>USDT</option>
+  </select>
+
+  <input id="sendAmount" placeholder="Amount">
+  <input id="sendTo" placeholder="Send to (any text)">
+  <button onclick="sendTx()">Send</button>
+  <div id="sendStatus"></div>
+
+  <h3>Transaction History</h3>
+  <div id="txHistory"></div>
+</div>
+
+
 <script>
-/*
-  EDITABLE DEMO DATA:
-  - The accounts array below contains 20 demo accounts.
-  - Edit balances here before deploying to change what each demo key opens.
-  - Keys are strings (demo-key-1 .. demo-key-20). You can change them too.
-*/
-const accounts = [
-  // index 0 -> demo-key-1, index 1 -> demo-key-2, ... index 19 -> demo-key-20
-  // format: { key: 'demo-key-N', label: 'Name', balances: { BTC, ETH, BNB, MATIC, USDT }, usdRates: {...} }
+/* ============================================
+   20 UNIQUE KEYS
+============================================ */
+const keys = [
+  "demo-key-1","demo-key-2","demo-key-3","demo-key-4","demo-key-5",
+  "demo-key-6","demo-key-7","demo-key-8","demo-key-9","demo-key-10",
+  "demo-key-11","demo-key-12","demo-key-13","demo-key-14","demo-key-15",
+  "demo-key-16","demo-key-17","demo-key-18","demo-key-19","demo-key-20"
 ];
 
-// Populate default 20 demo accounts if not pre-filled
-if (accounts.length === 0) {
-  for (let i=1;i<=20;i++){
-    accounts.push({
-      key: `demo-key-${i}`,
-      label: `Demo Wallet ${i}`,
-      balances: {
-        BTC: (Math.random()*0.5+0.01).toFixed(6),
-        ETH: (Math.random()*5+0.1).toFixed(4),
-        BNB: (Math.random()*10+0.1).toFixed(3),
-        MATIC: (Math.random()*500+1).toFixed(2),
-        USDT: (Math.random()*2000+10).toFixed(2)
-      },
-      // Demo USD rates used to calculate total (editable)
-      usdRates: { BTC: 41000, ETH: 3200, BNB: 420, MATIC: 0.9, USDT: 1 }
-    });
-  }
+/* ============================================
+   EDITABLE BALANCES FOR EACH WALLET
+   Each wallet gets its own numbers
+============================================ */
+const wallets = {};
+
+for (let i = 1; i <= 20; i++){
+  wallets["demo-key-" + i] = {
+    BTC: (Math.random()*0.4+0.005).toFixed(6),
+    ETH: (Math.random()*3+0.05).toFixed(4),
+    BNB: (Math.random()*5+0.1).toFixed(3),
+    MATIC: (Math.random()*300+1).toFixed(2),
+    USDT: (Math.random()*1500+5).toFixed(2),
+    tx: []  // transaction history
+  };
 }
 
-/* -- END EDITABLE AREA -- */
+let currentKey = null;
 
-const keyInput = document.getElementById('keyInput');
-const openBtn = document.getElementById('openBtn');
-const showKeysBtn = document.getElementById('showKeysBtn');
-const walletArea = document.getElementById('walletArea');
-const walletKeyEl = document.getElementById('walletKey');
-const walletIndexEl = document.getElementById('walletIndex');
-const balancesList = document.getElementById('balancesList');
-const totalUsdEl = document.getElementById('totalUsd');
-const assetSelect = document.getElementById('assetSelect');
-const amountInput = document.getElementById('amountInput');
-const toInput = document.getElementById('toInput');
-const sendBtn = document.getElementById('sendBtn');
-const txsEl = document.getElementById('txs');
-const resetBtn = document.getElementById('resetBtn');
-const activeInfo = document.getElementById('activeInfo');
-const sendStatus = document.getElementById('sendStatus');
-
-let currentIndex = null;
-let history = {}; // map of index -> transactions array
-
-function showKeysList(){
-  const keys = accounts.map(a=>a.key).join(', ');
-  alert('Demo keys (examples):\n\n' + keys + '\n\nThese are local demo keys — change them in the code if you want different keys.');
+/* ============================================
+   NAVIGATION
+============================================ */
+function goHome(){
+  showPage("loginPage");
 }
 
-showKeysBtn.addEventListener('click', showKeysList);
-
-openBtn.addEventListener('click', ()=>{
-  const key = keyInput.value.trim();
-  if(!key){ alert('Enter a demo key (e.g. demo-key-1)'); return; }
-  const idx = accounts.findIndex(a=>a.key === key);
-  if(idx === -1){ alert('Key not found. Try one of the demo keys (demo-key-1 … demo-key-20). Click "Show keys" to see them.'); return; }
-  openWallet(idx);
-});
-
-function openWallet(idx){
-  currentIndex = idx;
-  const acc = accounts[idx];
-  walletKeyEl.textContent = acc.key + ' — ' + acc.label;
-  walletIndexEl.textContent = `Account #${idx+1}`;
-  walletArea.style.display = 'block';
-  activeInfo.textContent = `Opened: ${acc.key} (Wallet ${idx+1})`;
-  renderBalances();
-  renderTxs();
-  // preselect first asset
-  assetSelect.value = 'BTC';
-  sendStatus.textContent = '';
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
 
-function renderBalances(){
-  const acc = accounts[currentIndex];
-  balancesList.innerHTML = '';
-  const rates = acc.usdRates || {};
-  let totalUsd = 0;
-  for (const [sym,amtStr] of Object.entries(acc.balances)){
-    const amt = parseFloat(amtStr);
-    const usd = (rates[sym] || 0) * amt;
-    totalUsd += usd;
-    const row = document.createElement('div');
-    row.className = 'asset';
-    row.innerHTML = `
-      <div class="left">
-        <div class="dot">${sym[0]}</div>
-        <div>
-          <div style="font-weight:700">${sym}</div>
-          <div class="muted small">${amt} ${sym}</div>
-        </div>
-      </div>
-      <div style="text-align:right">
-        <div class="muted small">≈ $${usd.toFixed(2)}</div>
-        <div style="margin-top:6px">
-          <button class="editBtn smallBtn" data-asset="${sym}" style="padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)">Edit</button>
-        </div>
-      </div>
-    `;
-    balancesList.appendChild(row);
-  }
-  totalUsdEl.textContent = `$${totalUsd.toFixed(2)}`;
-  // wire edit buttons
-  document.querySelectorAll('.editBtn').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const asset = btn.dataset.asset;
-      const current = accounts[currentIndex].balances[asset];
-      const v = prompt(`Edit demo balance for ${asset} (decimal number):`, current);
-      if (v !== null){
-        const num = parseFloat(v);
-        if (isNaN(num)){ alert('Invalid number'); return; }
-        accounts[currentIndex].balances[asset] = num.toString();
-        renderBalances();
-      }
-    })
-  });
-}
+/* ============================================
+   OPEN WALLET
+============================================ */
+function openWallet(){
+  const key = document.getElementById("keyInput").value.trim();
 
-function renderTxs(){
-  const idx = currentIndex;
-  if (!history[idx]) history[idx] = [];
-  txsEl.innerHTML = '';
-  const arr = history[idx].slice().reverse(); // newest first
-  if(arr.length===0){
-    txsEl.innerHTML = '<div class="muted small">No transactions yet (local only).</div>';
+  if(!keys.includes(key)){
+    alert("Invalid key. Use demo-key-1 to demo-key-20.");
     return;
   }
-  arr.forEach(tx=>{
-    const txDiv = document.createElement('div');
-    txDiv.className = 'tx';
-    txDiv.innerHTML = `<div>
-        <div style="font-weight:700">${tx.asset} • ${tx.amount}</div>
-        <div class="muted small">${tx.to}</div>
-      </div>
-      <div style="text-align:right">
-        <div class="success">Success</div>
-        <div class="muted small">${new Date(tx.time).toLocaleString()}</div>
-      </div>`;
-    txsEl.appendChild(txDiv);
-  });
+
+  currentKey = key;
+
+  document.getElementById("walletTitle").innerText =
+    "Wallet for: " + currentKey;
+
+  refreshBalances();
+  refreshTx();
+
+  showPage("walletContainer");
 }
 
-sendBtn.addEventListener('click', ()=>{
-  const asset = assetSelect.value;
-  const amountStr = amountInput.value.trim();
-  const to = toInput.value.trim() || 'demo-recipient';
-  const amt = parseFloat(amountStr);
-  if (isNaN(amt) || amt <= 0){ alert('Enter a valid positive amount'); return; }
-  // simulate transaction successfully
-  const acc = accounts[currentIndex];
-  // subtract locally (will allow negative balances because this is a prank/outcome always success)
-  const prev = parseFloat(acc.balances[asset]) || 0;
-  const newBal = prev - amt;
-  acc.balances[asset] = Number(newBal).toFixed(6).toString();
+/* ============================================
+   BALANCES
+============================================ */
+function refreshBalances(){
+  const wallet = wallets[currentKey];
+  const box = document.getElementById("balanceList");
+  box.innerHTML = "";
 
-  // record tx (local)
-  if (!history[currentIndex]) history[currentIndex] = [];
-  history[currentIndex].push({
-    asset, amount: amt.toString(), to, time: Date.now()
+  for (const a in wallet){
+    if(a === "tx") continue;
+    box.innerHTML += `
+      <div class="asset">
+        <div><b>${a}</b></div>
+        <div>${wallet[a]}</div>
+      </div>
+    `;
+  }
+}
+
+/* ============================================
+   SEND FAKE TRANSACTION
+============================================ */
+function sendTx(){
+  const asset = document.getElementById("sendAsset").value;
+  const amount = document.getElementById("sendAmount").value;
+  const to = document.getElementById("sendTo").value;
+
+  if(amount <= 0){
+    alert("Enter valid amount.");
+    return;
+  }
+
+  const wallet = wallets[currentKey];
+
+  // Subtract (can even go negative because it's a prank)
+  wallet[asset] = (parseFloat(wallet[asset]) - parseFloat(amount)).toFixed(6);
+
+  wallet.tx.push({
+    asset,
+    amount,
+    to,
+    time: new Date().toLocaleString()
   });
 
-  // Show immediate success state
-  sendStatus.textContent = `Transaction successful — ${amt} ${asset} sent`;
-  amountInput.value = '';
-  toInput.value = '';
+  document.getElementById("sendStatus").innerHTML =
+    `<p class='success'>Transaction Successful ✓</p>`;
 
-  // animate update
-  renderBalances();
-  renderTxs();
-  // clear status after a few seconds
-  setTimeout(()=>{ sendStatus.textContent = '' }, 4200);
-});
+  refreshBalances();
+  refreshTx();
 
-resetBtn.addEventListener('click', ()=>{
-  if (!confirm('Reset this demo wallet to initial balances? This affects only the local demo state.')) return;
-  // reload the entire page to reset state
-  location.reload();
-});
+  document.getElementById("sendAmount").value = "";
+  document.getElementById("sendTo").value = "";
 
-// convenience: open first demo on enter
-keyInput.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') openBtn.click(); });
+  setTimeout(()=>{ document.getElementById("sendStatus").innerHTML = "" }, 3500);
+}
 
-/* Optional: auto-open demo-key-1 if you want on load, uncomment:
-openWallet(0);
-*/
+/* ============================================
+   TRANSACTION HISTORY
+============================================ */
+function refreshTx(){
+  const wallet = wallets[currentKey];
+  const box = document.getElementById("txHistory");
+  box.innerHTML = "";
 
+  wallet.tx.slice().reverse().forEach(t=>{
+    box.innerHTML += `
+      <div class="tx">
+        <div>
+          <b>${t.asset}</b> ${t.amount}<br>
+          <small>${t.to}</small>
+        </div>
+        <div class="success">Success<br><small>${t.time}</small></div>
+      </div>
+    `;
+  });
+
+  if(wallet.tx.length === 0){
+    box.innerHTML = "<p>No transactions yet</p>";
+  }
+}
 </script>
+
 </body>
 </html>
