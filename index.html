@@ -310,7 +310,7 @@ btcAmount.addEventListener('input', () => {
   const val = parseFloat(btcAmount.value) || 0;
   btcAmountFiat.innerText = `≈ $${(val * btcPrice).toFixed(2)}`;
   if (val > 0) {
-    nextBtn.style.background = '#4ade80';
+    nextBtn.style.background = '#2563eb';
     nextBtn.style.color = '#000';
     nextBtn.disabled = false;
   } else {
