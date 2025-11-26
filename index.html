@@ -68,28 +68,6 @@
       cursor: pointer;
     }
 
-    /* cached badge style (small pill) */
-    .cached-badge {
-      display: inline-block;
-      background: #f3f4f6;
-      color: #1f2937;
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      margin-left: 8px;
-      vertical-align: middle;
-      font-weight: 600;
-      letter-spacing: 0.3px;
-    }
-
-    /* small live label style */
-    .live-label {
-      font-size: 12px;
-      color: #0a53ff;
-      margin-left: 8px;
-      font-weight:600;
-    }
-
     @media(min-width:700px){ .container{max-width:720px;margin:0 auto} }
   </style>
 </head>
@@ -503,34 +481,11 @@ function updateAllBalances() {
 let lastFetchAt = 0;
 let fetching = false;
 
-function setPriceTextWithCachedBadge(el, price) {
-  // price: number
-  const formatted = `$${(price || 0).toLocaleString()}`;
-  el.innerHTML = `${formatted}<span class="cached-badge">cached</span>`;
-}
-
-function setPriceTextLive(el, price) {
-  const formatted = `$${(price || 0).toLocaleString()}`;
-  el.innerHTML = `${formatted} <span class="live-label">Live</span>`;
-}
-
 async function fetchAllPrices() {
   // prevent overlapping fetches
   if (fetching) return;
   fetching = true;
-
   try {
-    // while fetching, if we have cached values show the cached badge (they're already set on bootstrap,
-    // but if user navigated away/back during expiry we ensure badge presence)
-    const hasCache = !!localStorage.getItem(CACHE_KEY);
-    if (hasCache) {
-      setPriceTextWithCachedBadge(btcPriceTextEl, portfolio.BTC.price);
-      setPriceTextWithCachedBadge(solPriceTextEl, portfolio.SOL.price);
-      setPriceTextWithCachedBadge(ethPriceTextEl, portfolio.ETH.price);
-      setPriceTextWithCachedBadge(bnbPriceTextEl, portfolio.BNB.price);
-      setPriceTextWithCachedBadge(maticPriceTextEl, portfolio.MATIC.price);
-    }
-
     const ids = Object.values(portfolio).map(c => c.api).join(',');
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`;
     // try fetch with timeout (10s)
@@ -549,13 +504,13 @@ async function fetchAllPrices() {
       portfolio[sym].price = price;
     }
 
-    // update labels (live)
-    setPriceTextLive(btcPriceTextEl, portfolio.BTC.price);
+    // update labels
+    btcPriceTextEl.innerText = `$${portfolio.BTC.price.toLocaleString()} (Live)`;
     btcPriceDetailEl.innerText = `$${portfolio.BTC.price.toLocaleString()}`;
-    setPriceTextLive(solPriceTextEl, portfolio.SOL.price);
-    setPriceTextLive(ethPriceTextEl, portfolio.ETH.price);
-    setPriceTextLive(bnbPriceTextEl, portfolio.BNB.price);
-    setPriceTextLive(maticPriceTextEl, portfolio.MATIC.price);
+    solPriceTextEl.innerText = `$${portfolio.SOL.price.toLocaleString()} (Live)`;
+    ethPriceTextEl.innerText = `$${portfolio.ETH.price.toLocaleString()} (Live)`;
+    bnbPriceTextEl.innerText = `$${portfolio.BNB.price.toLocaleString()} (Live)`;
+    maticPriceTextEl.innerText = `$${portfolio.MATIC.price.toLocaleString()} (Live)`;
 
     // recalc UI
     updateAllBalances();
@@ -778,24 +733,13 @@ txDone.addEventListener('click', () => {
 // if cached prices exist, apply them first (fast UI)
 const hadCache = loadPricesFromCache();
 updateAllBalances();
-
-// update price text labels even if cached — show small badge if cached and we'll remove it when live fetch completes
-if (hadCache) {
-  setPriceTextWithCachedBadge(btcPriceTextEl, portfolio.BTC.price);
-  btcPriceDetailEl.innerText = `$${(portfolio.BTC.price || 0).toLocaleString()}`;
-  setPriceTextWithCachedBadge(solPriceTextEl, portfolio.SOL.price);
-  setPriceTextWithCachedBadge(ethPriceTextEl, portfolio.ETH.price);
-  setPriceTextWithCachedBadge(bnbPriceTextEl, portfolio.BNB.price);
-  setPriceTextWithCachedBadge(maticPriceTextEl, portfolio.MATIC.price);
-} else {
-  // no cache — show placeholders until live fetch
-  btcPriceTextEl.innerText = `Loading...`;
-  btcPriceDetailEl.innerText = `Loading...`;
-  solPriceTextEl.innerText = `Loading...`;
-  ethPriceTextEl.innerText = `Loading...`;
-  bnbPriceTextEl.innerText = `Loading...`;
-  maticPriceTextEl.innerText = `Loading...`;
-}
+// update price text labels even if cached
+btcPriceTextEl.innerText = `$${(portfolio.BTC.price || 0).toLocaleString()}${hadCache ? ' (Cached)' : ''}`;
+btcPriceDetailEl.innerText = `$${(portfolio.BTC.price || 0).toLocaleString()}`;
+solPriceTextEl.innerText = `$${(portfolio.SOL.price || 0).toLocaleString()}${hadCache ? ' (Cached)' : ''}`;
+ethPriceTextEl.innerText = `$${(portfolio.ETH.price || 0).toLocaleString()}${hadCache ? ' (Cached)' : ''}`;
+bnbPriceTextEl.innerText = `$${(portfolio.BNB.price || 0).toLocaleString()}${hadCache ? ' (Cached)' : ''}`;
+maticPriceTextEl.innerText = `$${(portfolio.MATIC.price || 0).toLocaleString()}${hadCache ? ' (Cached)' : ''}`;
 
 // background fetch to replace cached values with live ones when available
 fetchAllPrices().catch(()=>{});
