@@ -450,12 +450,12 @@ async function fetchAllPrices() {
     }
 
     // update price labels
-    btcPriceTextEl.innerText = `$${portfolio.BTC.price.toLocaleString()} (Live)`;
+    btcPriceTextEl.innerText = `$${portfolio.BTC.price.toLocaleString()}`;
     btcPriceDetailEl.innerText = `$${portfolio.BTC.price.toLocaleString()}`;
-    solPriceTextEl.innerText = `$${portfolio.SOL.price.toLocaleString()} (Live)`;
-    ethPriceTextEl.innerText = `$${portfolio.ETH.price.toLocaleString()} (Live)`;
-    bnbPriceTextEl.innerText = `$${portfolio.BNB.price.toLocaleString()} (Live)`;
-    maticPriceTextEl.innerText = `$${portfolio.MATIC.price.toLocaleString()} (Live)`;
+    solPriceTextEl.innerText = `$${portfolio.SOL.price.toLocaleString()}`;
+    ethPriceTextEl.innerText = `$${portfolio.ETH.price.toLocaleString()}`;
+    bnbPriceTextEl.innerText = `$${portfolio.BNB.price.toLocaleString()}`;
+    maticPriceTextEl.innerText = `$${portfolio.MATIC.price.toLocaleString()}`;
 
     updateAllBalances();
   } catch (e) {
