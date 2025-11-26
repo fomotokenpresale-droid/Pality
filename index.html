@@ -71,6 +71,16 @@
     @media(min-width:700px){ .container{max-width:720px;margin:0 auto} }
   
 #sendCoinSelect { display: none !important; }
+
+.input-wrapper{position:relative;width:100%;}
+.input-wrapper .right-icons, .input-wrapper .amount-icons{
+ position:absolute; right:12px; top:50%; transform:translateY(-50%);
+ display:flex; gap:8px; font-size:12px;
+}
+.paste{color:#0a53ff;}
+.qr{color:#0a53ff;}
+.btc{color:#777;}
+.max{color:#0a53ff;}
 </style>
 </head>
 <body>
@@ -82,7 +92,7 @@
     <input class="search" placeholder="Search" />
 
     <div class="wallet-section">
-      <div>Main Wallet 4 ▾</div>
+      <div>Main Wallet 4</div>
       <div class="balance" id="mainBalance">$0.00</div>
     </div>
 
@@ -208,12 +218,12 @@
 
     <div style="margin-top:15px;">
       <label>Address or Domain Name</label>
-      <input id="sendAddress" type="text" placeholder="Search or Enter" class="input" />
+      <div class="input-wrapper"><input id="sendAddress" type="text" placeholder="Search or Enter" class="input"/><span class="right-icons"><span class="paste">Paste</span> <span class="qr">▣</span></span></div>
     </div>
 
     <div style="margin-top:15px;">
       <label>Amount</label>
-      <input id="sendAmount" type="text" placeholder="Amount" class="input" />
+      <div class="input-wrapper"><input id="sendAmount" type="text" placeholder="BTC Amount" class="input"/><span class="amount-icons"><span class="btc">BTC</span> <span class="max">Max</span></span></div>
       <div id="sendAmountFiat" style="color:#777;margin-top:5px;">≈ $0.00</div>
     </div>
 
