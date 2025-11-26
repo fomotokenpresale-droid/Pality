@@ -1,172 +1,168 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wallet UI Replica</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet UI</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f6f7fb;
-      color: #1a1a1a;
-    }
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f6f7fb;
+            color: #1a1a1a;
+        }
 
-    .header {
-      padding: 20px;
-      text-align: center;
-      background: white;
-      font-size: 22px;
-      font-weight: bold;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
+        .header {
+            padding: 20px;
+            text-align: center;
+            background: white;
+            font-size: 22px;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
 
-    .balance-card {
-      background: linear-gradient(145deg, #0e3a2b, #1e6f55);
-      padding: 20px;
-      margin: 15px;
-      border-radius: 18px;
-      color: white;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
+        .balance-card {
+            background: linear-gradient(145deg, #0e3a2b, #1e6f55);
+            padding: 20px;
+            margin: 15px;
+            border-radius: 18px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
 
-    .balance-card h2 {
-      margin: 0;
-      font-size: 15px;
-      opacity: 0.9;
-    }
+        .balance-card h2 {
+            margin: 0;
+            font-size: 15px;
+            opacity: 0.9;
+        }
 
-    .balance-card .amount {
-      font-size: 32px;
-      font-weight: bold;
-      margin-top: 8px;
-    }
+        .balance-card .amount {
+            font-size: 32px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
 
-    .section-title {
-      margin: 20px 15px 10px;
-      font-size: 18px;
-      font-weight: bold;
-    }
+        .section-title {
+            margin: 20px 15px 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
 
-    .coin-list {
-      margin: 15px;
-    }
+        .coin {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px;
+            background: white;
+            margin: 12px 15px;
+            border-radius: 14px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
 
-    .coin-item {
-      background: white;
-      padding: 14px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    }
+        .coin-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    .coin-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+        .coin-left img {
+            width: 32px;
+            height: 32px;
+        }
 
-    .coin-left img {
-      width: 32px;
-      height: 32px;
-    }
+        .coin-title {
+            font-size: 15px;
+            font-weight: bold;
+        }
 
-    .coin-title {
-      font-size: 15px;
-      font-weight: bold;
-    }
+        .coin-sub {
+            font-size: 13px;
+            opacity: 0.7;
+            margin-top: 2px;
+        }
 
-    .coin-sub {
-      font-size: 13px;
-      opacity: 0.7;
-      margin-top: 2px;
-    }
+        /* -------------------------------------- */
+        /*  FIX: RIGHT-ALIGN THE BALANCE COLUMN   */
+        /* -------------------------------------- */
+        .coin > div:last-child {
+            text-align: right;
+            width: 120px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        /* -------------------------------------- */
 
-    /* --- PRICE ALIGNMENT FIX --- */
-    .coin-price {
-      text-align: right;
-      display: inline-block;
-      width: 80px; /* ensures perfect alignment */
-    }
-
-  </style>
+    </style>
 </head>
 
 <body>
 
-  <div class="header">Wallet</div>
+    <div class="header">Wallet</div>
 
-  <div class="balance-card">
-    <h2>Total Balance</h2>
-    <div class="amount">$ 54,903.14</div>
-  </div>
-
-  <div class="section-title">Coins</div>
-
-  <div class="coin-list">
-
-    <div class="coin-item">
-      <div class="coin-left">
-        <img src="bitcoin.png" />
-        <div>
-          <div class="coin-title">Bitcoin</div>
-          <div class="coin-sub">Live</div>
-        </div>
-      </div>
-      <div class="coin-price">$94,399.19</div>
+    <div class="balance-card">
+        <h2>Total Balance</h2>
+        <div class="amount">$ 54,903.14</div>
     </div>
 
-    <div class="coin-item">
-      <div class="coin-left">
-        <img src="ethereum.png" />
-        <div>
-          <div class="coin-title">Ethereum</div>
-          <div class="coin-sub">Live</div>
+    <div class="section-title">Coins</div>
+
+    <div class="coin">
+        <div class="coin-left">
+            <img src="images/btc.png">
+            <div>
+                <div class="coin-title">Bitcoin</div>
+                <div class="coin-sub">Live</div>
+            </div>
         </div>
-      </div>
-      <div class="coin-price">$3,389.18</div>
+        <div>0 BTC ($0.00)</div>
     </div>
 
-    <div class="coin-item">
-      <div class="coin-left">
-        <img src="bnb.png" />
-        <div>
-          <div class="coin-title">BNB</div>
-          <div class="coin-sub">Live</div>
+    <div class="coin">
+        <div class="coin-left">
+            <img src="images/sol.png">
+            <div>
+                <div class="coin-title">Solana</div>
+                <div class="coin-sub">Live</div>
+            </div>
         </div>
-      </div>
-      <div class="coin-price">$590.10</div>
+        <div>0 SOL ($0.00)</div>
     </div>
 
-    <div class="coin-item">
-      <div class="coin-left">
-        <img src="solana.png" />
-        <div>
-          <div class="coin-title">Solana</div>
-          <div class="coin-sub">Live</div>
+    <div class="coin">
+        <div class="coin-left">
+            <img src="images/eth.png">
+            <div>
+                <div class="coin-title">Ethereum</div>
+                <div class="coin-sub">Live</div>
+            </div>
         </div>
-      </div>
-      <div class="coin-price">$172.28</div>
+        <div>0 ETH ($0.00)</div>
     </div>
 
-    <div class="coin-item">
-      <div class="coin-left">
-        <img src="xrp.png" />
-        <div>
-          <div class="coin-title">XRP</div>
-          <div class="coin-sub">Live</div>
+    <div class="coin">
+        <div class="coin-left">
+            <img src="images/bnb.png">
+            <div>
+                <div class="coin-title">BNB</div>
+                <div class="coin-sub">Live</div>
+            </div>
         </div>
-      </div>
-      <div class="coin-price">$0.6132</div>
+        <div>0 BNB ($0.00)</div>
     </div>
 
-  </div>
+    <div class="coin">
+        <div class="coin-left">
+            <img src="images/matic.png">
+            <div>
+                <div class="coin-title">Polygon</div>
+                <div class="coin-sub">Live</div>
+            </div>
+        </div>
+        <div>0 MATIC ($0.00)</div>
+    </div>
 
 </body>
 </html>
