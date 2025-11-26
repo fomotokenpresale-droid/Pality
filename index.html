@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -9,81 +9,74 @@
     .header { padding: 20px; text-align: center; font-size: 20px; font-weight: 600; background: white; position: sticky; top: 0; }
     .search { margin: 15px; padding: 10px; border-radius: 12px; border: 1px solid #ccc; width: calc(100% - 30px); }
     .wallet-section { text-align: left; padding: 0 20px; }
-    .balance { font-size: 32px; font-weight: bold; }
+    .balance { font-size: 36px; font-weight: bold; }
     .actions { display: flex; justify-content: space-around; padding: 20px 0; background: white; }
     .action { display: flex; flex-direction: column; align-items: center; font-size: 14px; cursor: pointer; }
     .circle { width: 55px; height: 55px; border-radius: 50%; background: #eee; display: flex; justify-content: center; align-items: center; margin-bottom: 8px; font-size: 22px; }
-
-    /* 🔥 FIX: Crypto rows more compact for mobile */
     .crypto-list { padding: 0 20px 80px 20px; }
-    .coin { 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; 
-      padding: 14px 0; 
-      border-bottom: 1px solid #ddd; 
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .coin-info { display: flex; align-items: center; gap: 10px; }
-    .coin img { width: 30px; height: 30px; }
-
-    /* 🔥 FIX: Right side aligns properly on phone */
-    .coin-right {
-      text-align: right;
-      font-size: 13px;
-      line-height: 1.2;
-      max-width: 120px;
-      overflow-wrap: break-word;
-    }
-
-    /* smaller price text */
-    .coin small {
-      font-size: 11px;
-      color: #555;
-    }
-
+    .coin { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #ddd; cursor: pointer; }
+    .coin-info { display: flex; align-items: center; gap: 12px; }
+    .coin img { width: 32px; height: 32px; }
     .footer { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ccc; }
     .footer div { text-align: center; font-size: 14px; }
 
     /* pages (single-page app) */
-    .page { display: none; }
+    .page { display: none; } /* base: hidden; showMain will reveal home */
     #btcPage { padding:20px; }
-    #sendBTC, #confirmSend, #processingPopup, #success-screen, #txDetails {
-      position: fixed; inset: 0; background: white;
-      display: none; flex-direction: column;
-      padding: 20px; z-index: 99999; overflow-y: auto;
-    }
+    #sendBTC { position: fixed; inset: 0; background: white; display: none; flex-direction: column; padding: 20px; z-index: 99999; overflow-y: auto; }
+    #confirmSend { position:fixed; inset:0; background:#ffffff; display:none; flex-direction:column; padding:20px; z-index:999999; overflow-y:auto; }
 
-    #processingPopup { background: rgba(0,0,0,0.5); display:none; justify-content:center; align-items:center; }
+    #processingPopup { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000000; }
     .processing-card { background: #fff; padding: 24px; border-radius: 14px; width: calc(100% - 64px); max-width: 360px; text-align: center; }
     .spinner { width: 56px; height: 56px; border-radius: 50%; border: 6px solid #e6e6e6; border-top-color: #0a53ff; margin: 0 auto 14px; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .processing-title { font-weight:700; margin-bottom:8px; }
     .processing-text { color:#555; font-size:14px; }
 
-    .select-coin, .input {
-      width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #ccc; font-size: 16px; margin-top: 6px;
+    #txDetails { padding:20px; }
+
+    .tx-row { display:flex; justify-content:space-between; margin-bottom:10px; }
+    .status-pending { color:#f59e0b; font-weight:700; }
+    .status-success { color:#10b981; font-weight:700; }
+
+    /* small additions for modal controls so they look okay */
+    .select-coin { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; margin-top:10px; }
+    .input { width:100%; padding:14px; margin-top:6px; border-radius:12px; border:1px solid #ccc; font-size:16px; }
+
+    /* action button style used for primary actions (royal blue) */
+    .action-btn {
+      width: 100%;
+      padding: 16px;
+      font-size: 18px;
+      background: royalblue;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      margin-top: 20px;
+      cursor: pointer;
     }
 
-    .action-btn {
-      width: 100%; padding: 16px; font-size: 18px; background: royalblue; color: #fff;
-      border: none; border-radius: 12px; margin-top: 20px; cursor: pointer;
-    }
     .ghost-btn {
-      width: 100%; padding: 14px; font-size: 16px; background: #f3f3f3; color: #222;
-      border: none; border-radius: 12px; margin-top: 12px; cursor: pointer;
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      background: #f3f3f3;
+      color: #222;
+      border: none;
+      border-radius: 12px;
+      margin-top: 12px;
+      cursor: pointer;
     }
 
     @media(min-width:700px){ .container{max-width:720px;margin:0 auto} }
   </style>
 </head>
-
 <body>
 
-  <!-- HOME PAGE -->
+  <!-- HOME PAGE (wrap in .page) -->
   <div id="home-page" class="page">
     <div class="header">Home</div>
+
     <input class="search" placeholder="Search" />
 
     <div class="wallet-section">
@@ -100,7 +93,6 @@
     </div>
 
     <div class="crypto-list">
-
       <!-- BTC -->
       <div class="coin" id="btcRow">
         <div class="coin-info">
@@ -110,7 +102,7 @@
             <small id="btcPriceText">Loading...</small>
           </div>
         </div>
-        <div class="coin-right" id="btcWalletBalance">0 BTC ($0.00)</div>
+        <div id="btcWalletBalance">0 BTC ($0.00)</div>
       </div>
 
       <!-- SOL -->
@@ -122,7 +114,7 @@
             <small id="solPriceText">Loading...</small>
           </div>
         </div>
-        <div class="coin-right" id="solWalletBalance">0 SOL ($0.00)</div>
+        <div id="solWalletBalance">0 SOL ($0.00)</div>
       </div>
 
       <!-- ETH -->
@@ -134,7 +126,7 @@
             <small id="ethPriceText">Loading...</small>
           </div>
         </div>
-        <div class="coin-right" id="ethWalletBalance">0 ETH ($0.00)</div>
+        <div id="ethWalletBalance">0 ETH ($0.00)</div>
       </div>
 
       <!-- BNB -->
@@ -146,7 +138,7 @@
             <small id="bnbPriceText">Loading...</small>
           </div>
         </div>
-        <div class="coin-right" id="bnbWalletBalance">0 BNB ($0.00)</div>
+        <div id="bnbWalletBalance">0 BNB ($0.00)</div>
       </div>
 
       <!-- MATIC -->
@@ -158,9 +150,8 @@
             <small id="maticPriceText">Loading...</small>
           </div>
         </div>
-        <div class="coin-right" id="maticWalletBalance">0 MATIC ($0.00)</div>
+        <div id="maticWalletBalance">0 MATIC ($0.00)</div>
       </div>
-
     </div>
 
     <div class="footer">
@@ -171,11 +162,508 @@
     </div>
   </div>
 
-  <!-- OTHER PAGES + JS BELOW (UNCHANGED FUNCTIONALITY) -->
-  
+  <!-- BTC PAGE -->
+  <div id="btcPage" class="page">
+    <div id="backBtn" style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:18px;margin-bottom:20px;">← Back</div>
+    <h2>Bitcoin</h2>
+    <div style="text-align:center;margin-top:20px;">
+     <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" width="80" alt="BTC logo" />
+      <h3 id="btcHoldings">0 BTC</h3>
+      <p id="btcHoldingsFiat">≈ $0.00</p>
+    </div>
+
+    <div style='display:flex;justify-content:space-around;margin:20px 0;'>
+      <div class='action' id="sendFromBTC"><div class='circle'>↑</div>Send</div>
+      <div class='action'><div class='circle'>↓</div>Receive</div>
+      <div class='action'><div class='circle'>▣</div>Buy</div>
+      <div class='action'><div class='circle'>⇄</div>Swap</div>
+      <div class='action'><div class='circle'>🏦</div>Sell</div>
+    </div>
+
+    <button style='background:#0a53ff;color:white;width:100%;padding:14px;border:none;border-radius:12px;font-size:16px;'>Buy BTC</button>
+
+    <div style='margin-top:30px;border-top:1px solid #ddd;padding-top:15px;'>
+      <strong>Current BTC price</strong>
+      <div id="btcPriceDetail">Loading...</div>
+    </div>
+  </div>
+
+  <!-- SEND PAGE (wrapped as page - will be locked to the selected coin) -->
+  <div id="sendBTC" class="page" aria-hidden="true">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h2 id="sendHeader" style="margin:0;">Send</h2>
+      <div id="closeSend" style="font-size:24px;cursor:pointer;" aria-label="Close send">✕</div>
+    </div>
+
+    <!-- select coin (will be replaced with single option on open) -->
+    <select id="sendCoinSelect" class="select-coin" aria-label="Select coin to send">
+      <option value="BTC">BTC</option>
+      <option value="ETH">ETH</option>
+      <option value="SOL">SOL</option>
+      <option value="BNB">BNB</option>
+      <option value="MATIC">MATIC</option>
+    </select>
+
+    <div style="margin-top:15px;">
+      <label>Address or Domain Name</label>
+      <input id="sendAddress" type="text" placeholder="Search or Enter" class="input" />
+    </div>
+
+    <div style="margin-top:15px;">
+      <label>Amount</label>
+      <input id="sendAmount" type="text" placeholder="Amount" class="input" />
+      <div id="sendAmountFiat" style="color:#777;margin-top:5px;">≈ $0.00</div>
+    </div>
+
+    <button id="nextBtn" style="margin-top:30px;width:100%;padding:16px;font-size:17px;border:none;background:#e5e6eb;border-radius:14px;color:#777;">Next</button>
+  </div>
+
+  <!-- CONFIRM PAGE -->
+  <div id="confirmSend" class="page" aria-hidden="true">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div id="backToSend" style="font-size:22px;cursor:pointer;">←</div>
+      <h2 id="confirmTitle" style="margin:0;font-weight:600;">Transfer</h2>
+      <div></div>
+    </div>
+
+    <div id="confirmAmount" style="font-size:26px;font-weight:700;text-align:center;">0</div>
+    <div id="confirmFiat" style="color:#666;text-align:center;margin-bottom:25px;">$0.00</div>
+
+    <div style="background:#f3f3f3;border-radius:14px;padding:18px;margin-bottom:20px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+        <span>Asset</span><span id="confirmAssetLabel">—</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+        <span>Wallet</span><span>Main Wallet</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;">
+        <span>To</span><span id="confirmTo">Address</span>
+      </div>
+    </div>
+
+    <div style="background:#f3f3f3;border-radius:14px;padding:18px;margin-bottom:30px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+        <span>Network fee</span><span id="confirmFee">0</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-weight:600;">
+        <span>Max Total</span><span id="confirmTotal">$0.00</span>
+      </div>
+    </div>
+
+    <button id="confirmBtn" class="action-btn">Confirm</button>
+  </div>
+
+  <!-- PROCESSING POPUP (also a page for hiding/showing) -->
+  <div id="processingPopup" class="page" aria-hidden="true">
+    <div class="processing-card">
+      <div class="spinner" aria-hidden="true"></div>
+      <div class="processing-title">Processing</div>
+      <div class="processing-text">Transaction in progress! Blockchain validation is underway...</div>
+      <div class="processing-actions">
+        <button id="processingDetails" class="ghost-btn">Transaction Details</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS SCREEN (new) -->
+  <div id="success-screen" class="page" aria-hidden="true" style="padding:20px;">
+    <div style="text-align:center;">
+      <div style="font-size:48px; margin-bottom:10px;">✅</div>
+      <div style="font-weight:700;font-size:20px;margin-bottom:8px;">Transaction Successful</div>
+      <div id="success-sub" style="color:#666;margin-bottom:20px;">Your transaction has been processed.</div>
+      <button id="view-details" class="ghost-btn">View Details</button>
+      <button id="success-done" class="action-btn">Done</button>
+    </div>
+  </div>
+
+  <!-- TX DETAILS PAGE -->
+  <div id="txDetails" class="page">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+      <div id="txBack" style="cursor:pointer;font-weight:700;">◀ Back</div>
+      <div id="txStatus" class="status-pending">Pending</div>
+    </div>
+
+    <div id="txAmount" style="font-size:20px;font-weight:700;margin-bottom:8px;">0</div>
+    <div id="txFiat" style="color:#666;margin-bottom:16px;">$0.00</div>
+
+    <div style="background:#f3f3f3;border-radius:12px;padding:12px;margin-bottom:12px;">
+      <div class="tx-row"><span>To</span><span id="txTo">Address</span></div>
+      <div class="tx-row"><span>Fee</span><span id="txFee">0</span></div>
+      <div class="tx-row"><span>Total</span><span id="txTotal">$0.00</span></div>
+      <div class="tx-row"><span>Timestamp</span><span id="txTime">-</span></div>
+    </div>
+
+    <button id="txDone" class="action-btn">Done</button>
+  </div>
+
 <script>
-/* JS CODE REMAINS EXACTLY THE SAME — unchanged functionality */
-/* (Your entire JS logic for prices, navigation, send flow, confirmations, etc. stays intact) */
+/* ======================================================
+   MASTER PORTFOLIO + CONFIG
+   ====================================================== */
+
+const portfolio = {
+  BTC: { amount: 0.67, api: 'bitcoin', price: 0, usd: 0 },
+  SOL: { amount: 104, api: 'solana', price: 0, usd: 0 },
+  ETH: { amount: 19, api: 'ethereum', price: 0, usd: 0 },
+  BNB: { amount: 249, api: 'binancecoin', price: 0, usd: 0 },
+  MATIC: { amount: 834, api: 'matic-network', price: 0, usd: 0 }
+};
+
+const displayConfig = {
+  BTC: {decimals:8},
+  ETH: {decimals:6},
+  SOL: {decimals:4},
+  BNB: {decimals:4},
+  MATIC: {decimals:2}
+};
+
+/* ======================================================
+   ELEMENT SELECTORS (grab all needed DOM nodes once)
+   ====================================================== */
+
+const mainBalanceEl = document.getElementById('mainBalance');
+
+const btcRow = document.getElementById('btcRow');
+const solRow = document.getElementById('solRow');
+const ethRow = document.getElementById('ethRow');
+const bnbRow = document.getElementById('bnbRow');
+const maticRow = document.getElementById('maticRow');
+
+const btcWalletBalanceEl = document.getElementById('btcWalletBalance');
+const solWalletBalanceEl = document.getElementById('solWalletBalance');
+const ethWalletBalanceEl = document.getElementById('ethWalletBalance');
+const bnbWalletBalanceEl = document.getElementById('bnbWalletBalance');
+const maticWalletBalanceEl = document.getElementById('maticWalletBalance');
+
+const btcHoldingsEl = document.getElementById('btcHoldings');
+const btcHoldingsFiatEl = document.getElementById('btcHoldingsFiat');
+
+const btcPriceTextEl = document.getElementById('btcPriceText');
+const btcPriceDetailEl = document.getElementById('btcPriceDetail');
+const solPriceTextEl = document.getElementById('solPriceText');
+const ethPriceTextEl = document.getElementById('ethPriceText');
+const bnbPriceTextEl = document.getElementById('bnbPriceText');
+const maticPriceTextEl = document.getElementById('maticPriceText');
+
+const btcPage = document.getElementById('btcPage');
+const sendBTC = document.getElementById('sendBTC');
+const confirmSend = document.getElementById('confirmSend');
+const processingPopup = document.getElementById('processingPopup');
+const txDetails = document.getElementById('txDetails');
+const successScreen = document.getElementById('success-screen');
+
+const sendHeader = document.getElementById('sendHeader');
+const sendCoinSelect = document.getElementById('sendCoinSelect');
+const sendAddressEl = document.getElementById('sendAddress');
+const sendAmountEl = document.getElementById('sendAmount');
+const sendAmountFiatEl = document.getElementById('sendAmountFiat');
+const nextBtn = document.getElementById('nextBtn');
+
+const backBtn = document.getElementById('backBtn');
+const sendFromBTC = document.getElementById('sendFromBTC'); // button within BTC page
+const closeSend = document.getElementById('closeSend');
+const backToSend = document.getElementById('backToSend');
+const confirmBtn = document.getElementById('confirmBtn');
+
+const processingDetails = document.getElementById('processingDetails');
+
+const txBack = document.getElementById('txBack');
+const txStatus = document.getElementById('txStatus');
+const txAmount = document.getElementById('txAmount');
+const txFiat = document.getElementById('txFiat');
+const txTo = document.getElementById('txTo');
+const txFee = document.getElementById('txFee');
+const txTotal = document.getElementById('txTotal');
+const txTime = document.getElementById('txTime');
+const txDone = document.getElementById('txDone');
+
+const viewDetailsBtn = document.getElementById('view-details');
+const successDoneBtn = document.getElementById('success-done');
+
+/* ======================================================
+   UTILS: hide/show pages cleanly
+   ====================================================== */
+function hideAllPages() {
+  const pages = document.querySelectorAll('.page');
+  pages.forEach(p => p.style.display = 'none');
+}
+function showMain() {
+  hideAllPages();
+  document.getElementById('home-page').style.display = 'block';
+}
+function showSuccessScreen() {
+  hideAllPages();
+  successScreen.style.display = 'block';
+}
+
+/* ======================================================
+   UI UPDATE: calculate USD totals and push to DOM
+   ====================================================== */
+function updateAllBalances() {
+  let totalUSD = 0;
+  for (const sym in portfolio) {
+    const p = portfolio[sym];
+    p.usd = (p.amount || 0) * (p.price || 0);
+    totalUSD += p.usd;
+  }
+
+  mainBalanceEl.innerText = `$${totalUSD.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}`;
+
+  // BTC
+  const btc = portfolio.BTC;
+  btcWalletBalanceEl.innerText = `${btc.amount.toFixed(displayConfig.BTC.decimals)} BTC ($${btc.usd.toLocaleString(undefined,{minimumFractionDigits:2})})`;
+  btcHoldingsEl.innerText = `${btc.amount.toFixed(displayConfig.BTC.decimals)} BTC`;
+  btcHoldingsFiatEl.innerText = `≈ $${btc.usd.toFixed(2)}`;
+
+  // SOL
+  const sol = portfolio.SOL;
+  solWalletBalanceEl.innerText = `${sol.amount.toFixed(displayConfig.SOL.decimals)} SOL ($${sol.usd.toLocaleString(undefined,{minimumFractionDigits:2})})`;
+
+  // ETH
+  const eth = portfolio.ETH;
+  ethWalletBalanceEl.innerText = `${eth.amount.toFixed(displayConfig.ETH.decimals)} ETH ($${eth.usd.toLocaleString(undefined,{minimumFractionDigits:2})})`;
+
+  // BNB
+  const bnb = portfolio.BNB;
+  bnbWalletBalanceEl.innerText = `${bnb.amount.toFixed(displayConfig.BNB.decimals)} BNB ($${bnb.usd.toLocaleString(undefined,{minimumFractionDigits:2})})`;
+
+  // MATIC
+  const matic = portfolio.MATIC;
+  maticWalletBalanceEl.innerText = `${matic.amount.toFixed(displayConfig.MATIC.decimals)} MATIC ($${matic.usd.toLocaleString(undefined,{minimumFractionDigits:2})})`;
+}
+
+/* ======================================================
+   PRICE FETCHING
+   ====================================================== */
+async function fetchAllPrices() {
+  try {
+    const ids = Object.values(portfolio).map(c => c.api).join(',');
+    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    for (const sym in portfolio) {
+      const apiName = portfolio[sym].api;
+      const price = data && data[apiName] && data[apiName].usd ? data[apiName].usd : 0;
+      portfolio[sym].price = price;
+    }
+
+    // update price labels
+    btcPriceTextEl.innerText = `$${portfolio.BTC.price.toLocaleString()} (Live)`;
+    btcPriceDetailEl.innerText = `$${portfolio.BTC.price.toLocaleString()}`;
+    solPriceTextEl.innerText = `$${portfolio.SOL.price.toLocaleString()} (Live)`;
+    ethPriceTextEl.innerText = `$${portfolio.ETH.price.toLocaleString()} (Live)`;
+    bnbPriceTextEl.innerText = `$${portfolio.BNB.price.toLocaleString()} (Live)`;
+    maticPriceTextEl.innerText = `$${portfolio.MATIC.price.toLocaleString()} (Live)`;
+
+    updateAllBalances();
+  } catch (e) {
+    console.error('Price fetch failed', e);
+  }
+}
+
+/* initial fetch + periodic refresh */
+fetchAllPrices();
+setInterval(fetchAllPrices, 10000);
+
+/* ======================================================
+   NAVIGATION & EVENTS (single-page behavior)
+   ====================================================== */
+
+/* show BTC page */
+btcRow.addEventListener('click', () => {
+  hideAllPages();
+  btcPage.style.display = 'block';
+});
+
+/* show send modal from BTC page */
+sendFromBTC.addEventListener('click', () => openSendFor('BTC'));
+
+/* clicking coin rows opens send modal for that coin */
+solRow.addEventListener('click', () => openSendFor('SOL'));
+ethRow.addEventListener('click', () => openSendFor('ETH'));
+bnbRow.addEventListener('click', () => openSendFor('BNB'));
+maticRow.addEventListener('click', () => openSendFor('MATIC'));
+
+/* close send modal */
+closeSend.addEventListener('click', () => {
+  // return to main
+  showMain();
+});
+
+/* tx details back/done */
+txBack.addEventListener('click', () => {
+  // if user comes from success-screen, show success; otherwise show main
+  showMain();
+});
+txDone.addEventListener('click', () => {
+  showMain();
+});
+
+/* back button inside btc page */
+backBtn.addEventListener('click', () => showMain());
+
+/* ======================================================
+   GENERIC SEND FLOW (complete) - with locked dropdown on open
+   ====================================================== */
+
+let selectedCoin = 'BTC'; // default
+
+const coinNames = {
+  BTC: "Bitcoin",
+  ETH: "Ethereum",
+  SOL: "Solana",
+  BNB: "BNB",
+  MATIC: "Polygon (MATIC)"
+};
+
+function openSendFor(symbol) {
+  selectedCoin = symbol || sendCoinSelect.value || 'BTC';
+
+  // lock dropdown to single option for the selected coin
+  sendCoinSelect.innerHTML = `<option value="${selectedCoin}">${coinNames[selectedCoin] || selectedCoin}</option>`;
+  sendCoinSelect.value = selectedCoin;
+
+  sendHeader.innerText = `Send ${selectedCoin}`;
+
+  // show send modal (page)
+  hideAllPages();
+  sendBTC.style.display = 'flex';
+
+  // reset fields
+  sendAddressEl.value = '';
+  sendAmountEl.value = '';
+  sendAmountFiatEl.innerText = '≈ $0.00';
+
+  // reset next button
+  nextBtn.style.background = '#e5e6eb';
+  nextBtn.style.color = '#777';
+  nextBtn.disabled = true;
+}
+
+/* when changing coin selection (should be locked, but still handle) */
+sendCoinSelect.addEventListener('change', (e) => {
+  selectedCoin = e.target.value;
+  sendHeader.innerText = `Send ${selectedCoin}`;
+  const val = parseFloat(sendAmountEl.value) || 0;
+  sendAmountFiatEl.innerText = `≈ $${(val * (portfolio[selectedCoin].price || 0)).toFixed(2)}`;
+});
+
+/* update fiat preview on amount input */
+sendAmountEl.addEventListener('input', () => {
+  const val = parseFloat(sendAmountEl.value) || 0;
+  const price = portfolio[selectedCoin].price || 0;
+  sendAmountFiatEl.innerText = `≈ $${(val * price).toFixed(2)}`;
+
+  if (val > 0) {
+    nextBtn.style.background = '#0a53ff';
+    nextBtn.style.color = '#FFFFFF';
+    nextBtn.disabled = false;
+  } else {
+    nextBtn.style.background = '#e5e6eb';
+    nextBtn.style.color = '#777';
+    nextBtn.disabled = true;
+  }
+});
+
+/* NEXT -> build confirm screen */
+nextBtn.addEventListener('click', () => {
+  const amt = parseFloat(sendAmountEl.value) || 0;
+  const addr = sendAddressEl.value || 'No address';
+  const price = portfolio[selectedCoin].price || 0;
+  const usd = amt * price;
+  const fee = amt * 0.01; // simple fee
+  const totalUSD = usd + (fee * price);
+
+  document.getElementById('confirmAmount').innerText = `-${amt} ${selectedCoin}`;
+  document.getElementById('confirmFiat').innerText = `≈ $${usd.toFixed(2)}`;
+  document.getElementById('confirmFee').innerText = `${fee.toFixed(displayConfig[selectedCoin].decimals)} ${selectedCoin}`;
+  document.getElementById('confirmTotal').innerText = `$${totalUSD.toFixed(2)}`;
+  document.getElementById('confirmTo').innerText = addr;
+  document.getElementById('confirmAssetLabel').innerText = `${selectedCoin}`;
+  document.getElementById('confirmTitle').innerText = `Transfer ${selectedCoin}`;
+
+  // swap screens
+  hideAllPages();
+  confirmSend.style.display = 'flex';
+});
+
+/* back to send from confirm */
+backToSend.addEventListener('click', () => {
+  hideAllPages();
+  sendBTC.style.display = 'flex';
+});
+
+/* CONFIRM -> process tx, deduct and show success */
+confirmBtn.addEventListener('click', () => {
+  // show processing
+  hideAllPages();
+  processingPopup.style.display = 'flex';
+
+  document.body.style.overflow = 'hidden';
+
+  setTimeout(() => {
+    // read amount & symbol from confirm display
+    const confirmAmtText = document.getElementById('confirmAmount').innerText || '';
+    const parts = confirmAmtText.replace('-', '').split(' ');
+    const amt = parseFloat(parts[0]) || 0;
+    const sym = parts[1] || selectedCoin;
+
+    const feeText = document.getElementById('confirmFee').innerText || '';
+
+    // deduct coin amount
+    portfolio[sym].amount = Math.max(0, (portfolio[sym].amount || 0) - amt);
+
+    // refresh UI numbers
+    updateAllBalances();
+
+    // populate tx details for possible viewing later
+    txStatus.className = 'status-success';
+    txStatus.innerText = 'Successful';
+    txAmount.innerText = `${amt} ${sym}`;
+    txFiat.innerText = document.getElementById('confirmFiat').innerText || '';
+    txTo.innerText = document.getElementById('confirmTo').innerText || '';
+    txFee.innerText = feeText || '';
+    txTotal.innerText = document.getElementById('confirmTotal').innerText || '';
+    txTime.innerText = new Date().toLocaleString();
+
+    // hide processing and show success-screen only (no home overlap)
+    processingPopup.style.display = 'none';
+    showSuccessScreen();
+    document.body.style.overflow = '';
+
+  }, 1500);
+});
+
+/* processing details -> open tx details as pending */
+processingDetails.addEventListener('click', () => {
+  hideAllPages();
+  txDetails.style.display = 'block';
+  document.body.style.overflow = '';
+});
+
+/* success screen actions */
+viewDetailsBtn.addEventListener('click', () => {
+  hideAllPages();
+  txDetails.style.display = 'block';
+});
+successDoneBtn.addEventListener('click', () => {
+  showMain();
+});
+
+/* tx details back / done */
+txBack.addEventListener('click', () => {
+  showMain();
+});
+txDone.addEventListener('click', () => {
+  showMain();
+});
+
+/* ======================================================
+   start state: show main dashboard
+   ====================================================== */
+showMain();      // ensure home view is default
+updateAllBalances(); // initial numbers (prices 0 until fetch completes)
 </script>
 
 </body>
