@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -15,188 +15,158 @@
 
     .header {
       padding: 20px;
-      background: #fff;
-      display: flex;
-      justify-content: space-around;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .header div {
       text-align: center;
-      font-size: 14px;
-      cursor: pointer;
+      background: white;
+      font-size: 22px;
+      font-weight: bold;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
-    .container {
+    .balance-card {
+      background: linear-gradient(145deg, #0e3a2b, #1e6f55);
       padding: 20px;
+      margin: 15px;
+      border-radius: 18px;
+      color: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
 
-    .coin {
+    .balance-card h2 {
+      margin: 0;
+      font-size: 15px;
+      opacity: 0.9;
+    }
+
+    .balance-card .amount {
+      font-size: 32px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .section-title {
+      margin: 20px 15px 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .coin-list {
+      margin: 15px;
+    }
+
+    .coin-item {
+      background: white;
+      padding: 14px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 15px 0;
-      border-bottom: 1px solid #ddd;
-      cursor: pointer;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     }
 
-    /* ✔ NEW: Right-side balance alignment */
-    .coin > div:last-child {
-      text-align: right;
-      min-width: 140px;
-    }
-
-    .coin img {
-      width: 35px;
-      height: 35px;
-      margin-right: 10px;
-    }
-
-    .coin-info {
+    .coin-left {
       display: flex;
       align-items: center;
+      gap: 10px;
     }
 
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #fff;
-      border-top: 1px solid #ddd;
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 0;
+    .coin-left img {
+      width: 32px;
+      height: 32px;
     }
 
-    .bottom-nav div {
-      text-align: center;
-      font-size: 14px;
+    .coin-title {
+      font-size: 15px;
+      font-weight: bold;
     }
+
+    .coin-sub {
+      font-size: 13px;
+      opacity: 0.7;
+      margin-top: 2px;
+    }
+
+    /* --- PRICE ALIGNMENT FIX --- */
+    .coin-price {
+      text-align: right;
+      display: inline-block;
+      width: 80px; /* ensures perfect alignment */
+    }
+
   </style>
 </head>
+
 <body>
 
-  <div class="header">
-    <div>⬆️<br>Send</div>
-    <div>⬇️<br>Receive</div>
-    <div>◼️<br>Buy</div>
-    <div>🏦<br>Sell</div>
-    <div>🔄<br>History</div>
+  <div class="header">Wallet</div>
+
+  <div class="balance-card">
+    <h2>Total Balance</h2>
+    <div class="amount">$ 54,903.14</div>
   </div>
 
-  <div class="container">
+  <div class="section-title">Coins</div>
 
-    <!-- BTC -->
-    <div class="coin">
-      <div class="coin-info">
-        <img src="https://cryptoicons.org/api/icon/btc/200" alt="BTC">
+  <div class="coin-list">
+
+    <div class="coin-item">
+      <div class="coin-left">
+        <img src="bitcoin.png" />
         <div>
-          <strong>BTC</strong><br>
-          <span id="btcPriceText">$87,626</span>
+          <div class="coin-title">Bitcoin</div>
+          <div class="coin-sub">Live</div>
         </div>
       </div>
-      <div>
-        <span id="btcBalance">0.67000000 BTC</span><br>
-        <span id="btcUsd">($58,709.42)</span>
-      </div>
+      <div class="coin-price">$94,399.19</div>
     </div>
 
-    <!-- SOL -->
-    <div class="coin">
-      <div class="coin-info">
-        <img src="https://cryptoicons.org/api/icon/sol/200" alt="SOL">
+    <div class="coin-item">
+      <div class="coin-left">
+        <img src="ethereum.png" />
         <div>
-          <strong>SOL</strong><br>
-          <span id="solPriceText">$136.84</span>
+          <div class="coin-title">Ethereum</div>
+          <div class="coin-sub">Live</div>
         </div>
       </div>
-      <div>
-        <span id="solBalance">104.0000 SOL</span><br>
-        <span id="solUsd">($14,231.36)</span>
-      </div>
+      <div class="coin-price">$3,389.18</div>
     </div>
 
-    <!-- ETH -->
-    <div class="coin">
-      <div class="coin-info">
-        <img src="https://cryptoicons.org/api/icon/eth/200" alt="ETH">
+    <div class="coin-item">
+      <div class="coin-left">
+        <img src="bnb.png" />
         <div>
-          <strong>ETH</strong><br>
-          <span id="ethPriceText">$2,943.46</span>
+          <div class="coin-title">BNB</div>
+          <div class="coin-sub">Live</div>
         </div>
       </div>
-      <div>
-        <span id="ethBalance">19.000000 ETH</span><br>
-        <span id="ethUsd">($55,925.74)</span>
-      </div>
+      <div class="coin-price">$590.10</div>
     </div>
 
-    <!-- BNB -->
-    <div class="coin">
-      <div class="coin-info">
-        <img src="https://cryptoicons.org/api/icon/bnb/200" alt="BNB">
+    <div class="coin-item">
+      <div class="coin-left">
+        <img src="solana.png" />
         <div>
-          <strong>BNB</strong><br>
-          <span id="bnbPriceText">$867.80</span>
+          <div class="coin-title">Solana</div>
+          <div class="coin-sub">Live</div>
         </div>
       </div>
-      <div>
-        <span id="bnbBalance">249.0000 BNB</span><br>
-        <span id="bnbUsd">($216,082.20)</span>
-      </div>
+      <div class="coin-price">$172.28</div>
     </div>
 
-    <!-- MATIC -->
-    <div class="coin">
-      <div class="coin-info">
-        <img src="https://cryptoicons.org/api/icon/matic/200" alt="MATIC">
+    <div class="coin-item">
+      <div class="coin-left">
+        <img src="xrp.png" />
         <div>
-          <strong>MATIC</strong><br>
-          <span id="maticPriceText">$0</span>
+          <div class="coin-title">XRP</div>
+          <div class="coin-sub">Live</div>
         </div>
       </div>
-      <div>
-        <span id="maticBalance">834.00 MATIC</span><br>
-        <span id="maticUsd">($0.00)</span>
-      </div>
+      <div class="coin-price">$0.6132</div>
     </div>
 
   </div>
-
-  <div class="bottom-nav">
-    <div>Home</div>
-    <div>Swap</div>
-    <div>Earn</div>
-    <div>Discover</div>
-  </div>
-
-  <script>
-    // Portfolio values
-    const portfolio = {
-      BTC: { price: 87626, balance: 0.67 },
-      SOL: { price: 136.84, balance: 104 },
-      ETH: { price: 2943.46, balance: 19 },
-      BNB: { price: 867.8, balance: 249 },
-      MATIC: { price: 0, balance: 834 }
-    };
-
-    function updateValues() {
-      document.getElementById("btcPriceText").innerText = `$${portfolio.BTC.price.toLocaleString()}`;
-      document.getElementById("solPriceText").innerText = `$${portfolio.SOL.price.toLocaleString()}`;
-      document.getElementById("ethPriceText").innerText = `$${portfolio.ETH.price.toLocaleString()}`;
-      document.getElementById("bnbPriceText").innerText = `$${portfolio.BNB.price.toLocaleString()}`;
-      document.getElementById("maticPriceText").innerText = `$${portfolio.MATIC.price.toLocaleString()}`;
-
-      document.getElementById("btcUsd").innerText = `($${(portfolio.BTC.price * portfolio.BTC.balance).toLocaleString()})`;
-      document.getElementById("solUsd").innerText = `($${(portfolio.SOL.price * portfolio.SOL.balance).toLocaleString()})`;
-      document.getElementById("ethUsd").innerText = `($${(portfolio.ETH.price * portfolio.ETH.balance).toLocaleString()})`;
-      document.getElementById("bnbUsd").innerText = `($${(portfolio.BNB.price * portfolio.BNB.balance).toLocaleString()})`;
-      document.getElementById("maticUsd").innerText = `($${(portfolio.MATIC.price * portfolio.MATIC.balance).toLocaleString()})`;
-    }
-
-    updateValues();
-  </script>
 
 </body>
 </html>
