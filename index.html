@@ -46,7 +46,7 @@
 
   <div class="wallet-section">
     <div>Main Wallet 4</div>
-    <div class="balance" id="mainBalance">$58,382.88</div>
+    <div class="balance" id="mainBalance">$0.00</div>
   </div>
 
   <div class="actions">
@@ -66,7 +66,7 @@
           <small id="btcPriceText">Loading...</small>
         </div>
       </div>
-      <div id="btcWalletBalance">0.67 ($58,382.88)</div>
+      <div id="btcWalletBalance">0 BTC ($0.00)</div>
     </div>
 
     <div class="coin">
@@ -99,8 +99,8 @@
     <h2>Bitcoin</h2>
     <div style="text-align:center;margin-top:20px;">
      <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" width="80" alt="BTC logo" />
-      <h3 id="btcHoldings">0.67 BTC</h3>
-      <p id="btcHoldingsFiat">≈ $58,382.88</p>
+      <h3 id="btcHoldings">0 BTC</h3>
+      <p id="btcHoldingsFiat">≈ $0.00</p>
     </div>
 
     <div style='display:flex;justify-content:space-around;margin:20px 0;'>
@@ -189,7 +189,7 @@
 
   <!-- TX DETAILS -->
   <div id="txDetails">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+    <div style="display:flex;justify-content:between;align-items:center;margin-bottom:18px;">
       <div id="txBack" style="cursor:pointer;font-weight:700;">◀ Back</div>
       <div id="txStatus" class="status-pending">Pending</div>
     </div>
@@ -208,19 +208,56 @@
   </div>
 
 <script>
-let btcPrice = 0;
+/* ============================================
+   🔵 GLOBAL BTC SYSTEM (MOST IMPORTANT PART)
+   ============================================ */
 
-// LIVE PRICE
+let btcPrice = 0;
+let userBTC = 0.67;   // ORIGINAL BTC BALANCE (CHANGE ANYTIME YOU WANT)
+
+/* Calculates and updates ALL UI sections */
+function updateAllBTCBalances() {
+  const mainBalanceEl = document.getElementById("mainBalance");
+  const btcWalletBalance = document.getElementById("btcWalletBalance");
+  const btcHoldingsEl = document.getElementById("btcHoldings");
+  const btcHoldingsFiat = document.getElementById("btcHoldingsFiat");
+
+  const usdValue = userBTC * btcPrice;
+
+  // MAIN BALANCE
+  mainBalanceEl.innerText = `$${usdValue.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+
+  // BTC LIST ROW
+  btcWalletBalance.innerText =
+    `${userBTC.toFixed(8)} BTC ($${usdValue.toLocaleString(undefined,{minimumFractionDigits:2})})`;
+
+  // BTC PAGE HEADER
+  btcHoldingsEl.innerText = `${userBTC.toFixed(8)} BTC`;
+  btcHoldingsFiat.innerText = `≈ $${usdValue.toFixed(2)}`;
+}
+
+/* ============================================
+   🔵 LOAD LIVE BTC PRICE
+   ============================================ */
+
 async function loadBTCPrice() {
   try {
     const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
     const data = await res.json();
     btcPrice = data.bitcoin.usd;
+
     document.getElementById("btcPriceText").innerText = `$${btcPrice.toLocaleString()} (Live)`;
     document.getElementById("btcPriceDetail").innerText = `$${btcPrice.toLocaleString()}`;
+
+    updateAllBTCBalances();   // IMPORTANT: Update after price loads
   } catch (e) {}
 }
+
 loadBTCPrice();
+
+/* ======================================================
+   EXISTING APP NAVIGATION (UNCHANGED)
+   ====================================================== */
 
 const btcRow = document.getElementById('btcRow');
 const btcPage = document.getElementById('btcPage');
@@ -279,6 +316,10 @@ closeSend.addEventListener('click', () => {
   btcPage.style.display = 'block';
 });
 
+/* ======================================================
+   SEND PAGE — FIAT PREVIEW
+   ====================================================== */
+
 const btcAmountEl = document.getElementById('btcAmount');
 const btcAmountFiat = document.getElementById('btcAmountFiat');
 const nextBtn = document.getElementById('nextBtn');
@@ -287,6 +328,7 @@ const sendAddress = document.getElementById('sendAddress');
 btcAmountEl.addEventListener('input', () => {
   const val = parseFloat(btcAmountEl.value) || 0;
   btcAmountFiat.innerText = `≈ $${(val * btcPrice).toFixed(2)}`;
+
   if (val > 0) {
     nextBtn.style.background = '#0a53ff';
     nextBtn.style.color = '#FFFFFF';
@@ -297,6 +339,10 @@ btcAmountEl.addEventListener('input', () => {
     nextBtn.disabled = true;
   }
 });
+
+/* ======================================================
+   CONFIRM SEND PAGE
+   ====================================================== */
 
 nextBtn.addEventListener('click', () => {
   const btc = parseFloat(btcAmountEl.value) || 0;
@@ -318,6 +364,10 @@ backToSend.addEventListener('click', () => {
   sendBTC.style.display = 'flex';
 });
 
+/* ======================================================
+   FINAL CONFIRM — DEDUCT BALANCES (BTC + USD)
+   ====================================================== */
+
 confirmBtn.addEventListener('click', () => {
   processingPopup.style.display = 'flex';
   document.body.style.overflow = 'hidden';
@@ -326,27 +376,15 @@ confirmBtn.addEventListener('click', () => {
     const btc = parseFloat(document.getElementById('confirmAmount').innerText.replace('-', '').replace(' BTC','')) || 0;
     const feeText = document.getElementById('confirmFee').innerText;
     const fee = parseFloat(feeText.replace(' BTC','')) || 0;
-    const usdTotalSpent = parseFloat(document.getElementById('confirmTotal').innerText.replace("$","")) || 0;
+    const totalUSD = parseFloat(document.getElementById('confirmTotal').innerText.replace("$","")) || 0;
 
-    // 🔵 UPDATED — DEDUCT USD BALANCE
-    let mainBalanceEl = document.getElementById("mainBalance");
-    let currentUSD = parseFloat(mainBalanceEl.innerText.replace("$","").replace(/,/g,"")) || 0;
-    let newUSD = currentUSD - usdTotalSpent;
-    mainBalanceEl.innerText = `$${newUSD.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+    // 🔵 DEDUCT BTC FROM GLOBAL BALANCE
+    userBTC -= btc;
 
-    // 🔵 UPDATED — DEDUCT BTC BALANCE
-    let btcHoldingsEl = document.getElementById("btcHoldings");
-    let currentBTC = parseFloat(btcHoldingsEl.innerText.replace(" BTC","")) || 0;
-    let newBTC = currentBTC - btc;
+    // 🔵 AUTOMATICALLY UPDATE EVERYTHING
+    updateAllBTCBalances();
 
-    btcHoldingsEl.innerText = `${newBTC} BTC`;
-    document.getElementById("btcHoldingsFiat").innerText = `≈ $${(newBTC * btcPrice).toFixed(2)}`;
-
-    // 🔵 UPDATED — UPDATE BTC LIST ROW
-    document.getElementById("btcWalletBalance").innerText =
-      `${newBTC} ($${(newBTC * btcPrice).toLocaleString(undefined,{minimumFractionDigits:2})})`;
-
-    // TX DETAILS POPULATION
+    // TX DETAILS
     txStatus.className = 'status-success';
     txStatus.innerText = 'Successful';
     txAmount.innerText = `${btc} BTC`;
@@ -361,7 +399,7 @@ confirmBtn.addEventListener('click', () => {
     txDetails.style.display = 'block';
     document.body.style.overflow = '';
 
-  }, 3000);
+  }, 2000);
 });
 
 processingDetails.addEventListener('click', () => {
