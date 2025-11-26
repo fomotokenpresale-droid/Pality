@@ -36,6 +36,10 @@
     .status-pending { color:#f59e0b; font-weight:700; }
     .status-success { color:#10b981; font-weight:700; }
 
+    /* small additions for modal controls so they look okay */
+    .select-coin { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; margin-top:10px; }
+    .input { width:100%; padding:14px; margin-top:6px; border-radius:12px; border:1px solid #ccc; font-size:16px; }
+
     @media(min-width:700px){ .container{max-width:720px;margin:0 auto} }
   </style>
 </head>
@@ -152,41 +156,50 @@
     </div>
   </div>
 
-  <!-- SEND SCREEN -->
+  <!-- SEND SCREEN (generic now) -->
   <div id="sendBTC">
     <div style="display:flex;justify-content:space-between;align-items:center;">
-      <h2 style="margin:0;">Send BTC</h2>
+      <h2 id="sendHeader" style="margin:0;">Send</h2>
       <div id="closeSend" style="font-size:24px;cursor:pointer;">✕</div>
     </div>
 
-    <div style="margin-top:25px;">
+    <!-- select coin -->
+    <select id="sendCoinSelect" class="select-coin" aria-label="Select coin to send">
+      <option value="BTC">BTC</option>
+      <option value="ETH">ETH</option>
+      <option value="SOL">SOL</option>
+      <option value="BNB">BNB</option>
+      <option value="MATIC">MATIC</option>
+    </select>
+
+    <div style="margin-top:15px;">
       <label>Address or Domain Name</label>
-      <input id="sendAddress" type="text" placeholder="Search or Enter" style="width:100%;padding:14px;margin-top:6px;border-radius:12px;border:1px solid #ccc;font-size:16px;">
+      <input id="sendAddress" type="text" placeholder="Search or Enter" class="input">
     </div>
 
-    <div style="margin-top:25px;">
+    <div style="margin-top:15px;">
       <label>Amount</label>
-      <input id="btcAmount" type="text" placeholder="BTC Amount" style="width:100%;padding:14px;margin-top:6px;border-radius:12px;border:1px solid #ccc;font-size:16px;">
-      <div id="btcAmountFiat" style="color:#777;margin-top:5px;">≈ $0.00</div>
+      <input id="sendAmount" type="text" placeholder="Amount" class="input">
+      <div id="sendAmountFiat" style="color:#777;margin-top:5px;">≈ $0.00</div>
     </div>
 
-    <button id="nextBtn" style="margin-top:40px;width:100%;padding:16px;font-size:17px;border:none;background:#e5e6eb;border-radius:14px;color:#777;">Next</button>
+    <button id="nextBtn" style="margin-top:30px;width:100%;padding:16px;font-size:17px;border:none;background:#e5e6eb;border-radius:14px;color:#777;">Next</button>
   </div>
 
-  <!-- CONFIRM SEND PAGE -->
+  <!-- CONFIRM SEND PAGE (dynamic) -->
   <div id="confirmSend">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
       <div id="backToSend" style="font-size:22px;cursor:pointer;">←</div>
-      <h2 style="margin:0;font-weight:600;">Transfer</h2>
+      <h2 id="confirmTitle" style="margin:0;font-weight:600;">Transfer</h2>
       <div></div>
     </div>
 
-    <div id="confirmAmount" style="font-size:26px;font-weight:700;text-align:center;">0 BTC</div>
+    <div id="confirmAmount" style="font-size:26px;font-weight:700;text-align:center;">0</div>
     <div id="confirmFiat" style="color:#666;text-align:center;margin-bottom:25px;">$0.00</div>
 
     <div style="background:#f3f3f3;border-radius:14px;padding:18px;margin-bottom:20px;">
       <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-        <span>Asset</span><span>Bitcoin (BTC)</span>
+        <span>Asset</span><span id="confirmAssetLabel">—</span>
       </div>
       <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
         <span>Wallet</span><span>Main Wallet</span>
@@ -198,7 +211,7 @@
 
     <div style="background:#f3f3f3;border-radius:14px;padding:18px;margin-bottom:30px;">
       <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-        <span>Network fee</span><span id="confirmFee">0 BTC</span>
+        <span>Network fee</span><span id="confirmFee">0</span>
       </div>
       <div style="display:flex;justify-content:space-between;font-weight:600;">
         <span>Max Total</span><span id="confirmTotal">$0.00</span>
@@ -227,12 +240,12 @@
       <div id="txStatus" class="status-pending">Pending</div>
     </div>
 
-    <div id="txAmount" style="font-size:20px;font-weight:700;margin-bottom:8px;">0 BTC</div>
+    <div id="txAmount" style="font-size:20px;font-weight:700;margin-bottom:8px;">0</div>
     <div id="txFiat" style="color:#666;margin-bottom:16px;">$0.00</div>
 
     <div style="background:#f3f3f3;border-radius:12px;padding:12px;margin-bottom:12px;">
       <div class="tx-row"><span>To</span><span id="txTo">Address</span></div>
-      <div class="tx-row"><span>Fee</span><span id="txFee">0 BTC</span></div>
+      <div class="tx-row"><span>Fee</span><span id="txFee">0</span></div>
       <div class="tx-row"><span>Total</span><span id="txTotal">$0.00</span></div>
       <div class="tx-row"><span>Timestamp</span><span id="txTime">-</span></div>
     </div>
@@ -343,6 +356,11 @@ setInterval(fetchAllPrices, 10000); // refresh every 10s
    ====================================================== */
 
 const btcRow = document.getElementById('btcRow');
+const solRow = document.getElementById('solRow');
+const ethRow = document.getElementById('ethRow');
+const bnbRow = document.getElementById('bnbRow');
+const maticRow = document.getElementById('maticRow');
+
 const btcPage = document.getElementById('btcPage');
 const sendBTC = document.getElementById('sendBTC');
 const confirmSend = document.getElementById('confirmSend');
@@ -390,28 +408,66 @@ function showMain() {
   btcPage.style.display = 'none';
 }
 
-sendFromBTC.addEventListener('click', () => {
-  btcPage.style.display = 'none';
-  sendBTC.style.display = 'flex';
-});
+/* clicking other coin rows opens send modal for that coin */
+solRow.addEventListener('click', () => openSendFor('SOL'));
+ethRow.addEventListener('click', () => openSendFor('ETH'));
+bnbRow.addEventListener('click', () => openSendFor('BNB'));
+maticRow.addEventListener('click', () => openSendFor('MATIC'));
+
+/* sendFromBTC opens send modal preselected to BTC */
+sendFromBTC.addEventListener('click', () => openSendFor('BTC'));
+
 closeSend.addEventListener('click', () => {
   sendBTC.style.display = 'none';
   btcPage.style.display = 'block';
 });
 
-/* ======================================================
-   SEND PAGE — FIAT PREVIEW (BTC only, unchanged behavior)
-   ====================================================== */
+/* ============================================
+   GENERIC SEND FLOW
+   ============================================ */
 
-const btcAmountEl = document.getElementById('btcAmount');
-const btcAmountFiat = document.getElementById('btcAmountFiat');
-const nextBtn = document.getElementById('nextBtn');
-const sendAddress = document.getElementById('sendAddress');
+let selectedCoin = 'BTC'; // default
 
-btcAmountEl.addEventListener('input', () => {
-  const val = parseFloat(btcAmountEl.value) || 0;
-  // use live BTC price from portfolio
-  btcAmountFiat.innerText = `≈ $${(val * portfolio.BTC.price).toFixed(2)}`;
+const sendHeader = document.getElementById('sendHeader');
+const sendCoinSelect = document.getElementById('sendCoinSelect');
+const sendAmountEl = document.getElementById('sendAmount');
+const sendAmountFiat = document.getElementById('sendAmountFiat');
+
+// open send modal for a specific coin
+function openSendFor(symbol) {
+  selectedCoin = symbol || sendCoinSelect.value || 'BTC';
+  sendCoinSelect.value = selectedCoin;
+  sendHeader.innerText = `Send ${selectedCoin}`;
+
+  // show modal
+  btcPage.style.display = 'none';
+  sendBTC.style.display = 'flex';
+
+  // reset fields
+  document.getElementById('sendAddress').value = '';
+  sendAmountEl.value = '';
+  sendAmountFiat.innerText = '≈ $0.00';
+
+  // ensure Next button state
+  nextBtn.style.background = '#e5e6eb';
+  nextBtn.style.color = '#777';
+  nextBtn.disabled = true;
+}
+
+// when user changes coin in select
+sendCoinSelect.addEventListener('change', (e) => {
+  selectedCoin = e.target.value;
+  sendHeader.innerText = `Send ${selectedCoin}`;
+  // update fiat preview if amount already present
+  const val = parseFloat(sendAmountEl.value) || 0;
+  sendAmountFiat.innerText = `≈ $${(val * (portfolio[selectedCoin].price || 0)).toFixed(2)}`;
+});
+
+// amount input behavior (uses currently selected coin)
+sendAmountEl.addEventListener('input', () => {
+  const val = parseFloat(sendAmountEl.value) || 0;
+  const price = portfolio[selectedCoin].price || 0;
+  sendAmountFiat.innerText = `≈ $${(val * price).toFixed(2)}`;
 
   if (val > 0) {
     nextBtn.style.background = '#0a53ff';
@@ -424,57 +480,69 @@ btcAmountEl.addEventListener('input', () => {
   }
 });
 
-/* ======================================================
-   CONFIRM SEND PAGE (keeps the same UI values)
-   ====================================================== */
-
+/* NEXT -> populate confirm modal dynamically */
 nextBtn.addEventListener('click', () => {
-  const btc = parseFloat(btcAmountEl.value) || 0;
-  const usd = btc * portfolio.BTC.price;
-  const fee = btc * 0.01;
+  const amt = parseFloat(sendAmountEl.value) || 0;
+  const addr = document.getElementById('sendAddress').value || 'No address';
+  const price = portfolio[selectedCoin].price || 0;
+  const usd = amt * price;
+  const fee = amt * 0.01; // same simple fee model as before
+  const totalUSD = usd + (fee * price);
 
-  document.getElementById('confirmAmount').innerText = `-${btc} BTC`;
+  // confirm display
+  document.getElementById('confirmAmount').innerText = `-${amt} ${selectedCoin}`;
   document.getElementById('confirmFiat').innerText = `≈ $${usd.toFixed(2)}`;
-  document.getElementById('confirmFee').innerText = `${fee.toFixed(8)} BTC`;
-  document.getElementById('confirmTotal').innerText = `$${(usd + fee * portfolio.BTC.price).toFixed(2)}`;
-  document.getElementById('confirmTo').innerText = sendAddress.value || 'No address';
+  document.getElementById('confirmFee').innerText = `${fee.toFixed(displayConfig[selectedCoin].decimals)} ${selectedCoin}`;
+  document.getElementById('confirmTotal').innerText = `$${totalUSD.toFixed(2)}`;
+  document.getElementById('confirmTo').innerText = addr;
+  document.getElementById('confirmAssetLabel').innerText = `${selectedCoin}`;
 
+  // set title
+  document.getElementById('confirmTitle').innerText = `Transfer ${selectedCoin}`;
+
+  // show confirm screen
   sendBTC.style.display = 'none';
   confirmSend.style.display = 'flex';
 });
 
+/* back to send */
 backToSend.addEventListener('click', () => {
   confirmSend.style.display = 'none';
   sendBTC.style.display = 'flex';
 });
 
-/* ======================================================
-   FINAL CONFIRM — DEDUCT BTC FROM PORTFOLIO
-   ====================================================== */
-
+/* CONFIRM -> process and deduct correct coin */
 confirmBtn.addEventListener('click', () => {
   processingPopup.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 
   setTimeout(() => {
-    const btc = parseFloat(document.getElementById('confirmAmount').innerText.replace('-', '').replace(' BTC','')) || 0;
-    const feeText = document.getElementById('confirmFee').innerText;
-    const fee = parseFloat(feeText.replace(' BTC','')) || 0;
+    // parse amount and fee from confirm fields
+    const confirmAmtText = document.getElementById('confirmAmount').innerText || '';
+    // confirmAmtText format: "-{amt} {SYMBOL}"
+    const parts = confirmAmtText.replace('-', '').split(' ');
+    const amt = parseFloat(parts[0]) || 0;
+    const sym = parts[1] || selectedCoin;
 
-    // deduct BTC amount from portfolio (single source of truth)
-    portfolio.BTC.amount = Math.max(0, (portfolio.BTC.amount || 0) - btc);
+    const feeText = document.getElementById('confirmFee').innerText || '';
+    // feeText format: "{fee} {SYMBOL}"
+    const feeParts = feeText.split(' ');
+    const fee = parseFloat(feeParts[0]) || 0;
 
-    // recalc and update everything (main balance, all coins)
+    // deduct from portfolio safely
+    portfolio[sym].amount = Math.max(0, (portfolio[sym].amount || 0) - amt);
+
+    // update all UI
     updateAllBalances();
 
-    // TX DETAILS population
+    // TX DETAILS population (show coin amounts and USD totals)
     txStatus.className = 'status-success';
     txStatus.innerText = 'Successful';
-    txAmount.innerText = `${btc} BTC`;
-    txFiat.innerText = document.getElementById('confirmFiat').innerText;
-    txTo.innerText = document.getElementById('confirmTo').innerText;
-    txFee.innerText = feeText;
-    txTotal.innerText = document.getElementById('confirmTotal').innerText;
+    txAmount.innerText = `${amt} ${sym}`;
+    txFiat.innerText = document.getElementById('confirmFiat').innerText || '';
+    txTo.innerText = document.getElementById('confirmTo').innerText || '';
+    txFee.innerText = feeText || '';
+    txTotal.innerText = document.getElementById('confirmTotal').innerText || '';
     txTime.innerText = new Date().toLocaleString();
 
     processingPopup.style.display = 'none';
@@ -485,12 +553,14 @@ confirmBtn.addEventListener('click', () => {
   }, 2000);
 });
 
+/* processingDetails -> show pending tx details immediately */
 processingDetails.addEventListener('click', () => {
   processingPopup.style.display = 'none';
   txDetails.style.display = 'block';
   document.body.style.overflow = '';
 });
 
+/* tx details actions */
 txBack.addEventListener('click', () => {
   txDetails.style.display = 'none';
   showMain();
@@ -503,6 +573,8 @@ txDone.addEventListener('click', () => {
 /* initialize UI right away (0 prices until fetch completes) */
 updateAllBalances();
 
+/* ensure send modal default state */
+openSendFor('BTC');
 </script>
 
 </body>
