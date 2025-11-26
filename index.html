@@ -20,30 +20,22 @@
     .footer { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ccc; }
     .footer div { text-align: center; font-size: 14px; }
 
-    /* pages */
     #btcPage { display:none; padding:20px; }
     #sendBTC { position: fixed; inset: 0; background: white; display: none; flex-direction: column; padding: 20px; z-index: 99999; overflow-y: auto; }
     #confirmSend { position:fixed; inset:0; background:#ffffff; display:none; flex-direction:column; padding:20px; z-index:999999; overflow-y:auto; }
 
-    /* processing popup */
     #processingPopup { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000000; }
     .processing-card { background: #fff; padding: 24px; border-radius: 14px; width: calc(100% - 64px); max-width: 360px; text-align: center; }
     .spinner { width: 56px; height: 56px; border-radius: 50%; border: 6px solid #e6e6e6; border-top-color: #0a53ff; margin: 0 auto 14px; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .processing-title { font-weight:700; margin-bottom:8px; }
     .processing-text { color:#555; font-size:14px; }
-    .processing-actions { margin-top:18px; }
-    .btn { padding:12px 16px; border-radius:10px; border:none; cursor:pointer; }
-    .btn.primary { background:#0a53ff; color:#fff; }
-    .btn.ghost { background:#f3f3f3; color:#222; }
 
-    /* tx details page */
     #txDetails { display:none; padding:20px; }
     .tx-row { display:flex; justify-content:space-between; margin-bottom:10px; }
     .status-pending { color:#f59e0b; font-weight:700; }
     .status-success { color:#10b981; font-weight:700; }
 
-    /* responsive */
     @media(min-width:700px){ .container{max-width:720px;margin:0 auto} }
   </style>
 </head>
@@ -68,14 +60,13 @@
   <div class="crypto-list">
     <div class="coin" id="btcRow">
       <div class="coin-info">
-        <!-- use uploaded local image path provided by the user -->
         <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" />
         <div>
           <div>BTC</div>
           <small id="btcPriceText">Loading...</small>
         </div>
       </div>
-      <div id="btcWalletBalance"> 0.67 ($58,382.88) </div>
+      <div id="btcWalletBalance">0.67 ($58,382.88)</div>
     </div>
 
     <div class="coin">
@@ -102,7 +93,7 @@
     <div>Discover</div>
   </div>
 
-  <!-- BTC DETAIL PAGE -->
+  <!-- BTC PAGE -->
   <div id="btcPage">
     <div id="backBtn" style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:18px;margin-bottom:20px;">← Back</div>
     <h2>Bitcoin</h2>
@@ -128,7 +119,7 @@
     </div>
   </div>
 
-  <!-- SEND BTC POPUP -->
+  <!-- SEND SCREEN -->
   <div id="sendBTC">
     <div style="display:flex;justify-content:space-between;align-items:center;">
       <h2 style="margin:0;">Send BTC</h2>
@@ -184,27 +175,27 @@
     <button id="confirmBtn" style="background:#0a53ff;color:white;border:none;width:100%;padding:16px;border-radius:14px;font-size:18px;">Confirm</button>
   </div>
 
-  <!-- PROCESSING POPUP (Option A style) -->
+  <!-- PROCESSING POPUP -->
   <div id="processingPopup">
     <div class="processing-card">
-      <div class="spinner" aria-hidden="true"></div>
+      <div class="spinner"></div>
       <div class="processing-title">Processing</div>
-      <div class="processing-text">Transaction in progress! Blockchain validation is underway. This may take a few minutes.</div>
+      <div class="processing-text">Transaction in progress! Blockchain validation is underway...</div>
       <div class="processing-actions">
         <button id="processingDetails" class="btn primary">Transaction Details</button>
       </div>
     </div>
   </div>
 
-  <!-- TRANSACTION DETAILS PAGE -->
+  <!-- TX DETAILS -->
   <div id="txDetails">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
       <div id="txBack" style="cursor:pointer;font-weight:700;">◀ Back</div>
       <div id="txStatus" class="status-pending">Pending</div>
     </div>
 
-    <div style="font-size:20px;font-weight:700;margin-bottom:8px;" id="txAmount">0 BTC</div>
-    <div style="color:#666;margin-bottom:16px;" id="txFiat">$0.00</div>
+    <div id="txAmount" style="font-size:20px;font-weight:700;margin-bottom:8px;">0 BTC</div>
+    <div id="txFiat" style="color:#666;margin-bottom:16px;">$0.00</div>
 
     <div style="background:#f3f3f3;border-radius:12px;padding:12px;margin-bottom:12px;">
       <div class="tx-row"><span>To</span><span id="txTo">Address</span></div>
@@ -219,7 +210,7 @@
 <script>
 let btcPrice = 0;
 
-// Fetch live BTC price (non-blocking)
+// LIVE PRICE
 async function loadBTCPrice() {
   try {
     const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
@@ -227,14 +218,10 @@ async function loadBTCPrice() {
     btcPrice = data.bitcoin.usd;
     document.getElementById("btcPriceText").innerText = `$${btcPrice.toLocaleString()} (Live)`;
     document.getElementById("btcPriceDetail").innerText = `$${btcPrice.toLocaleString()}`;
-  } catch (e) {
-    document.getElementById("btcPriceText").innerText = "Price unavailable";
-    const el = document.getElementById("btcPriceDetail"); if(el) el.innerText = "Unavailable";
-  }
+  } catch (e) {}
 }
 loadBTCPrice();
 
-// Page elements
 const btcRow = document.getElementById('btcRow');
 const btcPage = document.getElementById('btcPage');
 const sendBTC = document.getElementById('sendBTC');
@@ -245,11 +232,9 @@ const closeSend = document.getElementById('closeSend');
 const backToSend = document.getElementById('backToSend');
 const confirmBtn = document.getElementById('confirmBtn');
 
-// Processing popup elements
 const processingPopup = document.getElementById('processingPopup');
 const processingDetails = document.getElementById('processingDetails');
 
-// Tx details
 const txDetails = document.getElementById('txDetails');
 const txBack = document.getElementById('txBack');
 const txStatus = document.getElementById('txStatus');
@@ -261,7 +246,6 @@ const txTotal = document.getElementById('txTotal');
 const txTime = document.getElementById('txTime');
 const txDone = document.getElementById('txDone');
 
-// Show BTC page
 btcRow.addEventListener('click', () => {
   hideMain();
   btcPage.style.display = 'block';
@@ -286,7 +270,6 @@ function showMain() {
   btcPage.style.display = 'none';
 }
 
-// Send flow
 sendFromBTC.addEventListener('click', () => {
   btcPage.style.display = 'none';
   sendBTC.style.display = 'flex';
@@ -296,14 +279,13 @@ closeSend.addEventListener('click', () => {
   btcPage.style.display = 'block';
 });
 
-// amount handling
-const btcAmount = document.getElementById('btcAmount');
+const btcAmountEl = document.getElementById('btcAmount');
 const btcAmountFiat = document.getElementById('btcAmountFiat');
 const nextBtn = document.getElementById('nextBtn');
 const sendAddress = document.getElementById('sendAddress');
 
-btcAmount.addEventListener('input', () => {
-  const val = parseFloat(btcAmount.value) || 0;
+btcAmountEl.addEventListener('input', () => {
+  const val = parseFloat(btcAmountEl.value) || 0;
   btcAmountFiat.innerText = `≈ $${(val * btcPrice).toFixed(2)}`;
   if (val > 0) {
     nextBtn.style.background = '#0a53ff';
@@ -317,7 +299,7 @@ btcAmount.addEventListener('input', () => {
 });
 
 nextBtn.addEventListener('click', () => {
-  const btc = parseFloat(btcAmount.value) || 0;
+  const btc = parseFloat(btcAmountEl.value) || 0;
   const usd = btc * btcPrice;
   const fee = btc * 0.01;
 
@@ -336,73 +318,67 @@ backToSend.addEventListener('click', () => {
   sendBTC.style.display = 'flex';
 });
 
-// Confirm -> Processing popup
 confirmBtn.addEventListener('click', () => {
-  // show processing popup
   processingPopup.style.display = 'flex';
-
-  // disable background scrolling
   document.body.style.overflow = 'hidden';
 
-  // automatically proceed to success after 3 seconds
   setTimeout(() => {
-    // populate tx details and show tx details page with success
     const btc = parseFloat(document.getElementById('confirmAmount').innerText.replace('-', '').replace(' BTC','')) || 0;
-    const feeText = document.getElementById('confirmFee').innerText || '0 BTC';
+    const feeText = document.getElementById('confirmFee').innerText;
     const fee = parseFloat(feeText.replace(' BTC','')) || 0;
-    const usdTotal = document.getElementById('confirmTotal').innerText.replace('$','') || '0';
+    const usdTotalSpent = parseFloat(document.getElementById('confirmTotal').innerText.replace("$","")) || 0;
 
+    // 🔵 UPDATED — DEDUCT USD BALANCE
+    let mainBalanceEl = document.getElementById("mainBalance");
+    let currentUSD = parseFloat(mainBalanceEl.innerText.replace("$","").replace(/,/g,"")) || 0;
+    let newUSD = currentUSD - usdTotalSpent;
+    mainBalanceEl.innerText = `$${newUSD.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+
+    // 🔵 UPDATED — DEDUCT BTC BALANCE
+    let btcHoldingsEl = document.getElementById("btcHoldings");
+    let currentBTC = parseFloat(btcHoldingsEl.innerText.replace(" BTC","")) || 0;
+    let newBTC = currentBTC - btc;
+
+    btcHoldingsEl.innerText = `${newBTC} BTC`;
+    document.getElementById("btcHoldingsFiat").innerText = `≈ $${(newBTC * btcPrice).toFixed(2)}`;
+
+    // 🔵 UPDATED — UPDATE BTC LIST ROW
+    document.getElementById("btcWalletBalance").innerText =
+      `${newBTC} ($${(newBTC * btcPrice).toLocaleString(undefined,{minimumFractionDigits:2})})`;
+
+    // TX DETAILS POPULATION
     txStatus.className = 'status-success';
     txStatus.innerText = 'Successful';
     txAmount.innerText = `${btc} BTC`;
-    txFiat.innerText = document.getElementById('confirmFiat').innerText || '';
-    txTo.innerText = document.getElementById('confirmTo').innerText || '';
+    txFiat.innerText = document.getElementById('confirmFiat').innerText;
+    txTo.innerText = document.getElementById('confirmTo').innerText;
     txFee.innerText = feeText;
-    txTotal.innerText = document.getElementById('confirmTotal').innerText || '';
+    txTotal.innerText = document.getElementById('confirmTotal').innerText;
     txTime.innerText = new Date().toLocaleString();
 
     processingPopup.style.display = 'none';
-    document.body.style.overflow = '';
-
-    // hide confirm screen and show tx details
     confirmSend.style.display = 'none';
     txDetails.style.display = 'block';
+    document.body.style.overflow = '';
+
   }, 3000);
 });
 
-// Transaction Details button inside processing popup — shows pending details immediately
 processingDetails.addEventListener('click', () => {
-  // populate pending details
-  const btc = parseFloat(document.getElementById('confirmAmount').innerText.replace('-', '').replace(' BTC','')) || 0;
-  const feeText = document.getElementById('confirmFee').innerText || '0 BTC';
-
-  txStatus.className = 'status-pending';
-  txStatus.innerText = 'Pending';
-  txAmount.innerText = `${btc} BTC`;
-  txFiat.innerText = document.getElementById('confirmFiat').innerText || '';
-  txTo.innerText = document.getElementById('confirmTo').innerText || '';
-  txFee.innerText = feeText;
-  txTotal.innerText = document.getElementById('confirmTotal').innerText || '';
-  txTime.innerText = new Date().toLocaleString();
-
   processingPopup.style.display = 'none';
-  document.body.style.overflow = '';
-  confirmSend.style.display = 'none';
   txDetails.style.display = 'block';
+  document.body.style.overflow = '';
 });
 
-// tx details actions
 txBack.addEventListener('click', () => {
   txDetails.style.display = 'none';
   showMain();
 });
-
 txDone.addEventListener('click', () => {
   txDetails.style.display = 'none';
   showMain();
 });
 
-// ensure initial state
 showMain();
 </script>
 
