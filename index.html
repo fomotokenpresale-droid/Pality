@@ -20,6 +20,7 @@
     .footer { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ccc; }
     .footer div { text-align: center; font-size: 14px; }
 
+    /* pages (single-page app) */
     #btcPage { display:none; padding:20px; }
     #sendBTC { position: fixed; inset: 0; background: white; display: none; flex-direction: column; padding: 20px; z-index: 99999; overflow-y: auto; }
     #confirmSend { position:fixed; inset:0; background:#ffffff; display:none; flex-direction:column; padding:20px; z-index:999999; overflow-y:auto; }
@@ -65,7 +66,7 @@
     <!-- BTC -->
     <div class="coin" id="btcRow">
       <div class="coin-info">
-        <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" />
+        <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" alt="BTC" />
         <div>
           <div>BTC</div>
           <small id="btcPriceText">Loading...</small>
@@ -77,7 +78,7 @@
     <!-- SOL -->
     <div class="coin" id="solRow">
       <div class="coin-info">
-        <img src="https://cryptologos.cc/logos/solana-sol-logo.png" />
+        <img src="https://cryptologos.cc/logos/solana-sol-logo.png" alt="SOL" />
         <div>
           <div>SOL</div>
           <small id="solPriceText">Loading...</small>
@@ -89,7 +90,7 @@
     <!-- ETH -->
     <div class="coin" id="ethRow">
       <div class="coin-info">
-        <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" />
+        <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" alt="ETH" />
         <div>
           <div>ETH</div>
           <small id="ethPriceText">Loading...</small>
@@ -101,7 +102,7 @@
     <!-- BNB -->
     <div class="coin" id="bnbRow">
       <div class="coin-info">
-        <img src="https://cryptologos.cc/logos/bnb-bnb-logo.png" />
+        <img src="https://cryptologos.cc/logos/bnb-bnb-logo.png" alt="BNB" />
         <div>
           <div>BNB</div>
           <small id="bnbPriceText">Loading...</small>
@@ -113,7 +114,7 @@
     <!-- MATIC -->
     <div class="coin" id="maticRow">
       <div class="coin-info">
-        <img src="https://cryptologos.cc/logos/polygon-matic-logo.png" />
+        <img src="https://cryptologos.cc/logos/polygon-matic-logo.png" alt="MATIC" />
         <div>
           <div>MATIC</div>
           <small id="maticPriceText">Loading...</small>
@@ -157,10 +158,10 @@
   </div>
 
   <!-- SEND SCREEN (generic now) -->
-  <div id="sendBTC">
+  <div id="sendBTC" aria-hidden="true">
     <div style="display:flex;justify-content:space-between;align-items:center;">
       <h2 id="sendHeader" style="margin:0;">Send</h2>
-      <div id="closeSend" style="font-size:24px;cursor:pointer;">✕</div>
+      <div id="closeSend" style="font-size:24px;cursor:pointer;" aria-label="Close send">✕</div>
     </div>
 
     <!-- select coin -->
@@ -174,12 +175,12 @@
 
     <div style="margin-top:15px;">
       <label>Address or Domain Name</label>
-      <input id="sendAddress" type="text" placeholder="Search or Enter" class="input">
+      <input id="sendAddress" type="text" placeholder="Search or Enter" class="input" />
     </div>
 
     <div style="margin-top:15px;">
       <label>Amount</label>
-      <input id="sendAmount" type="text" placeholder="Amount" class="input">
+      <input id="sendAmount" type="text" placeholder="Amount" class="input" />
       <div id="sendAmountFiat" style="color:#777;margin-top:5px;">≈ $0.00</div>
     </div>
 
@@ -187,7 +188,7 @@
   </div>
 
   <!-- CONFIRM SEND PAGE (dynamic) -->
-  <div id="confirmSend">
+  <div id="confirmSend" aria-hidden="true">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
       <div id="backToSend" style="font-size:22px;cursor:pointer;">←</div>
       <h2 id="confirmTitle" style="margin:0;font-weight:600;">Transfer</h2>
@@ -222,9 +223,9 @@
   </div>
 
   <!-- PROCESSING POPUP -->
-  <div id="processingPopup">
+  <div id="processingPopup" aria-hidden="true">
     <div class="processing-card">
-      <div class="spinner"></div>
+      <div class="spinner" aria-hidden="true"></div>
       <div class="processing-title">Processing</div>
       <div class="processing-text">Transaction in progress! Blockchain validation is underway...</div>
       <div class="processing-actions">
@@ -235,7 +236,7 @@
 
   <!-- TX DETAILS -->
   <div id="txDetails">
-    <div style="display:flex;justify-content:between;align-items:center;margin-bottom:18px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
       <div id="txBack" style="cursor:pointer;font-weight:700;">◀ Back</div>
       <div id="txStatus" class="status-pending">Pending</div>
     </div>
@@ -254,9 +255,9 @@
   </div>
 
 <script>
-/* ============================================
-   🔵 MASTER PORTFOLIO (single source of truth)
-   ============================================ */
+/* ======================================================
+   MASTER PORTFOLIO + CONFIG
+   ====================================================== */
 
 const portfolio = {
   BTC: { amount: 0.67, api: 'bitcoin', price: 0, usd: 0 },
@@ -266,7 +267,6 @@ const portfolio = {
   MATIC: { amount: 834, api: 'matic-network', price: 0, usd: 0 }
 };
 
-/* Helper: decimal formats per coin for display */
 const displayConfig = {
   BTC: {decimals:8},
   ETH: {decimals:6},
@@ -275,85 +275,11 @@ const displayConfig = {
   MATIC: {decimals:2}
 };
 
-/* Update UI from portfolio values */
-function updateAllBalances() {
-  // compute USD for each coin and total
-  let totalUSD = 0;
-  for (const sym in portfolio) {
-    const p = portfolio[sym];
-    p.usd = (p.amount || 0) * (p.price || 0);
-    totalUSD += p.usd;
-  }
-
-  // MAIN BALANCE (total of all coins)
-  const mainBalanceEl = document.getElementById('mainBalance');
-  mainBalanceEl.innerText = `$${totalUSD.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}`;
-
-  // BTC UI
-  const btc = portfolio.BTC;
-  document.getElementById('btcWalletBalance').innerText = `${btc.amount.toFixed(displayConfig.BTC.decimals)} BTC ($${btc.usd.toLocaleString(undefined,{minimumFractionDigits:2})})`;
-  document.getElementById('btcHoldings').innerText = `${btc.amount.toFixed(displayConfig.BTC.decimals)} BTC`;
-  document.getElementById('btcHoldingsFiat').innerText = `≈ $${btc.usd.toFixed(2)}`;
-
-  // SOL UI
-  const sol = portfolio.SOL;
-  document.getElementById('solWalletBalance').innerText = `${sol.amount.toFixed(displayConfig.SOL.decimals)} SOL ($${sol.usd.toLocaleString(undefined,{minimumFractionDigits:2})})`;
-
-  // ETH UI
-  const eth = portfolio.ETH;
-  document.getElementById('ethWalletBalance').innerText = `${eth.amount.toFixed(displayConfig.ETH.decimals)} ETH ($${eth.usd.toLocaleString(undefined,{minimumFractionDigits:2})})`;
-
-  // BNB UI
-  const bnb = portfolio.BNB;
-  document.getElementById('bnbWalletBalance').innerText = `${bnb.amount.toFixed(displayConfig.BNB.decimals)} BNB ($${bnb.usd.toLocaleString(undefined,{minimumFractionDigits:2})})`;
-
-  // MATIC UI
-  const matic = portfolio.MATIC;
-  document.getElementById('maticWalletBalance').innerText = `${matic.amount.toFixed(displayConfig.MATIC.decimals)} MATIC ($${matic.usd.toLocaleString(undefined,{minimumFractionDigits:2})})`;
-}
-
-/* ============================================
-   🔵 FETCH PRICES (CoinGecko simple/price)
-   ============================================ */
-
-async function fetchAllPrices() {
-  try {
-    const ids = Object.values(portfolio).map(c => c.api).join(',');
-    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`;
-    const res = await fetch(url);
-    const data = await res.json();
-
-    // assign prices back to portfolio
-    for (const sym in portfolio) {
-      const apiName = portfolio[sym].api;
-      const price = data && data[apiName] && data[apiName].usd ? data[apiName].usd : 0;
-      portfolio[sym].price = price;
-    }
-
-    // Update individual price labels
-    document.getElementById('btcPriceText').innerText = `$${portfolio.BTC.price.toLocaleString()} (Live)`;
-    document.getElementById('btcPriceDetail').innerText = `$${portfolio.BTC.price.toLocaleString()}`;
-
-    document.getElementById('solPriceText').innerText = `$${portfolio.SOL.price.toLocaleString()} (Live)`;
-    document.getElementById('ethPriceText').innerText = `$${portfolio.ETH.price.toLocaleString()} (Live)`;
-    document.getElementById('bnbPriceText').innerText = `$${portfolio.BNB.price.toLocaleString()} (Live)`;
-    document.getElementById('maticPriceText').innerText = `$${portfolio.MATIC.price.toLocaleString()} (Live)`;
-
-    // Recalculate USD totals and update UI
-    updateAllBalances();
-  } catch (e) {
-    // silently fail but keep UI unchanged
-    console.error('Price fetch failed', e);
-  }
-}
-
-/* initial load + periodic refresh */
-fetchAllPrices();
-setInterval(fetchAllPrices, 10000); // refresh every 10s
-
 /* ======================================================
-   EXISTING APP NAVIGATION & SEND FLOW (kept intact)
+   ELEMENT SELECTORS (grab all needed DOM nodes once)
    ====================================================== */
+
+const mainBalanceEl = document.getElementById('mainBalance');
 
 const btcRow = document.getElementById('btcRow');
 const solRow = document.getElementById('solRow');
@@ -361,19 +287,43 @@ const ethRow = document.getElementById('ethRow');
 const bnbRow = document.getElementById('bnbRow');
 const maticRow = document.getElementById('maticRow');
 
+const btcWalletBalanceEl = document.getElementById('btcWalletBalance');
+const solWalletBalanceEl = document.getElementById('solWalletBalance');
+const ethWalletBalanceEl = document.getElementById('ethWalletBalance');
+const bnbWalletBalanceEl = document.getElementById('bnbWalletBalance');
+const maticWalletBalanceEl = document.getElementById('maticWalletBalance');
+
+const btcHoldingsEl = document.getElementById('btcHoldings');
+const btcHoldingsFiatEl = document.getElementById('btcHoldingsFiat');
+
+const btcPriceTextEl = document.getElementById('btcPriceText');
+const btcPriceDetailEl = document.getElementById('btcPriceDetail');
+const solPriceTextEl = document.getElementById('solPriceText');
+const ethPriceTextEl = document.getElementById('ethPriceText');
+const bnbPriceTextEl = document.getElementById('bnbPriceText');
+const maticPriceTextEl = document.getElementById('maticPriceText');
+
 const btcPage = document.getElementById('btcPage');
 const sendBTC = document.getElementById('sendBTC');
 const confirmSend = document.getElementById('confirmSend');
+const processingPopup = document.getElementById('processingPopup');
+const txDetails = document.getElementById('txDetails');
+
+const sendHeader = document.getElementById('sendHeader');
+const sendCoinSelect = document.getElementById('sendCoinSelect');
+const sendAddressEl = document.getElementById('sendAddress');
+const sendAmountEl = document.getElementById('sendAmount');
+const sendAmountFiatEl = document.getElementById('sendAmountFiat');
+const nextBtn = document.getElementById('nextBtn');
+
 const backBtn = document.getElementById('backBtn');
-const sendFromBTC = document.getElementById('sendFromBTC');
+const sendFromBTC = document.getElementById('sendFromBTC'); // button within BTC page
 const closeSend = document.getElementById('closeSend');
 const backToSend = document.getElementById('backToSend');
 const confirmBtn = document.getElementById('confirmBtn');
 
-const processingPopup = document.getElementById('processingPopup');
 const processingDetails = document.getElementById('processingDetails');
 
-const txDetails = document.getElementById('txDetails');
 const txBack = document.getElementById('txBack');
 const txStatus = document.getElementById('txStatus');
 const txAmount = document.getElementById('txAmount');
@@ -384,12 +334,79 @@ const txTotal = document.getElementById('txTotal');
 const txTime = document.getElementById('txTime');
 const txDone = document.getElementById('txDone');
 
-btcRow.addEventListener('click', () => {
-  hideMain();
-  btcPage.style.display = 'block';
-});
-backBtn.addEventListener('click', () => showMain());
+/* ======================================================
+   UI UPDATE: calculate USD totals and push to DOM
+   ====================================================== */
+function updateAllBalances() {
+  let totalUSD = 0;
+  for (const sym in portfolio) {
+    const p = portfolio[sym];
+    p.usd = (p.amount || 0) * (p.price || 0);
+    totalUSD += p.usd;
+  }
 
+  mainBalanceEl.innerText = `$${totalUSD.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}`;
+
+  // BTC
+  const btc = portfolio.BTC;
+  btcWalletBalanceEl.innerText = `${btc.amount.toFixed(displayConfig.BTC.decimals)} BTC ($${btc.usd.toLocaleString(undefined,{minimumFractionDigits:2})})`;
+  btcHoldingsEl.innerText = `${btc.amount.toFixed(displayConfig.BTC.decimals)} BTC`;
+  btcHoldingsFiatEl.innerText = `≈ $${btc.usd.toFixed(2)}`;
+
+  // SOL
+  const sol = portfolio.SOL;
+  solWalletBalanceEl.innerText = `${sol.amount.toFixed(displayConfig.SOL.decimals)} SOL ($${sol.usd.toLocaleString(undefined,{minimumFractionDigits:2})})`;
+
+  // ETH
+  const eth = portfolio.ETH;
+  ethWalletBalanceEl.innerText = `${eth.amount.toFixed(displayConfig.ETH.decimals)} ETH ($${eth.usd.toLocaleString(undefined,{minimumFractionDigits:2})})`;
+
+  // BNB
+  const bnb = portfolio.BNB;
+  bnbWalletBalanceEl.innerText = `${bnb.amount.toFixed(displayConfig.BNB.decimals)} BNB ($${bnb.usd.toLocaleString(undefined,{minimumFractionDigits:2})})`;
+
+  // MATIC
+  const matic = portfolio.MATIC;
+  maticWalletBalanceEl.innerText = `${matic.amount.toFixed(displayConfig.MATIC.decimals)} MATIC ($${matic.usd.toLocaleString(undefined,{minimumFractionDigits:2})})`;
+}
+
+/* ======================================================
+   PRICE FETCHING
+   ====================================================== */
+async function fetchAllPrices() {
+  try {
+    const ids = Object.values(portfolio).map(c => c.api).join(',');
+    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    for (const sym in portfolio) {
+      const apiName = portfolio[sym].api;
+      const price = data && data[apiName] && data[apiName].usd ? data[apiName].usd : 0;
+      portfolio[sym].price = price;
+    }
+
+    // update price labels
+    btcPriceTextEl.innerText = `$${portfolio.BTC.price.toLocaleString()} (Live)`;
+    btcPriceDetailEl.innerText = `$${portfolio.BTC.price.toLocaleString()}`;
+    solPriceTextEl.innerText = `$${portfolio.SOL.price.toLocaleString()} (Live)`;
+    ethPriceTextEl.innerText = `$${portfolio.ETH.price.toLocaleString()} (Live)`;
+    bnbPriceTextEl.innerText = `$${portfolio.BNB.price.toLocaleString()} (Live)`;
+    maticPriceTextEl.innerText = `$${portfolio.MATIC.price.toLocaleString()} (Live)`;
+
+    updateAllBalances();
+  } catch (e) {
+    console.error('Price fetch failed', e);
+  }
+}
+
+/* initial fetch + periodic refresh */
+fetchAllPrices();
+setInterval(fetchAllPrices, 10000);
+
+/* ======================================================
+   NAVIGATION (single-page behavior)
+   ====================================================== */
 function hideMain() {
   document.querySelector('.header').style.display = 'none';
   document.querySelector('.search').style.display = 'none';
@@ -398,6 +415,7 @@ function hideMain() {
   document.querySelector('.crypto-list').style.display = 'none';
   document.querySelector('.footer').style.display = 'none';
 }
+
 function showMain() {
   document.querySelector('.header').style.display = '';
   document.querySelector('.search').style.display = '';
@@ -406,68 +424,86 @@ function showMain() {
   document.querySelector('.crypto-list').style.display = '';
   document.querySelector('.footer').style.display = '';
   btcPage.style.display = 'none';
+  sendBTC.style.display = 'none';
+  confirmSend.style.display = 'none';
+  processingPopup.style.display = 'none';
+  txDetails.style.display = 'none';
 }
 
-/* clicking other coin rows opens send modal for that coin */
+/* show BTC page */
+btcRow.addEventListener('click', () => {
+  hideMain();
+  btcPage.style.display = 'block';
+});
+
+/* show send modal from BTC page */
+sendFromBTC.addEventListener('click', () => openSendFor('BTC'));
+
+/* clicking coin rows opens send modal for that coin */
 solRow.addEventListener('click', () => openSendFor('SOL'));
 ethRow.addEventListener('click', () => openSendFor('ETH'));
 bnbRow.addEventListener('click', () => openSendFor('BNB'));
 maticRow.addEventListener('click', () => openSendFor('MATIC'));
 
-/* sendFromBTC opens send modal preselected to BTC */
-sendFromBTC.addEventListener('click', () => openSendFor('BTC'));
-
+/* close send modal */
 closeSend.addEventListener('click', () => {
   sendBTC.style.display = 'none';
-  btcPage.style.display = 'block';
+  // return to whichever page makes sense (main)
+  showMain();
 });
 
-/* ============================================
-   GENERIC SEND FLOW
-   ============================================ */
+/* tx details back/done */
+txBack.addEventListener('click', () => {
+  txDetails.style.display = 'none';
+  showMain();
+});
+txDone.addEventListener('click', () => {
+  txDetails.style.display = 'none';
+  showMain();
+});
+
+/* back button inside btc page */
+backBtn.addEventListener('click', () => showMain());
+
+/* ======================================================
+   GENERIC SEND FLOW (complete)
+   ====================================================== */
 
 let selectedCoin = 'BTC'; // default
 
-const sendHeader = document.getElementById('sendHeader');
-const sendCoinSelect = document.getElementById('sendCoinSelect');
-const sendAmountEl = document.getElementById('sendAmount');
-const sendAmountFiat = document.getElementById('sendAmountFiat');
-
-// open send modal for a specific coin
 function openSendFor(symbol) {
   selectedCoin = symbol || sendCoinSelect.value || 'BTC';
   sendCoinSelect.value = selectedCoin;
   sendHeader.innerText = `Send ${selectedCoin}`;
 
-  // show modal
-  btcPage.style.display = 'none';
+  // show send modal
   sendBTC.style.display = 'flex';
 
   // reset fields
-  document.getElementById('sendAddress').value = '';
+  sendAddressEl.value = '';
   sendAmountEl.value = '';
-  sendAmountFiat.innerText = '≈ $0.00';
+  sendAmountFiatEl.innerText = '≈ $0.00';
 
-  // ensure Next button state
+  // reset next button
   nextBtn.style.background = '#e5e6eb';
   nextBtn.style.color = '#777';
   nextBtn.disabled = true;
 }
 
-// when user changes coin in select
+/* when changing coin selection in the send modal */
 sendCoinSelect.addEventListener('change', (e) => {
   selectedCoin = e.target.value;
   sendHeader.innerText = `Send ${selectedCoin}`;
-  // update fiat preview if amount already present
+
   const val = parseFloat(sendAmountEl.value) || 0;
-  sendAmountFiat.innerText = `≈ $${(val * (portfolio[selectedCoin].price || 0)).toFixed(2)}`;
+  sendAmountFiatEl.innerText = `≈ $${(val * (portfolio[selectedCoin].price || 0)).toFixed(2)}`;
 });
 
-// amount input behavior (uses currently selected coin)
+/* update fiat preview on amount input */
 sendAmountEl.addEventListener('input', () => {
   const val = parseFloat(sendAmountEl.value) || 0;
   const price = portfolio[selectedCoin].price || 0;
-  sendAmountFiat.innerText = `≈ $${(val * price).toFixed(2)}`;
+  sendAmountFiatEl.innerText = `≈ $${(val * price).toFixed(2)}`;
 
   if (val > 0) {
     nextBtn.style.background = '#0a53ff';
@@ -480,62 +516,56 @@ sendAmountEl.addEventListener('input', () => {
   }
 });
 
-/* NEXT -> populate confirm modal dynamically */
+/* NEXT -> build confirm screen */
 nextBtn.addEventListener('click', () => {
   const amt = parseFloat(sendAmountEl.value) || 0;
-  const addr = document.getElementById('sendAddress').value || 'No address';
+  const addr = sendAddressEl.value || 'No address';
   const price = portfolio[selectedCoin].price || 0;
   const usd = amt * price;
-  const fee = amt * 0.01; // same simple fee model as before
+  const fee = amt * 0.01; // simple fee
   const totalUSD = usd + (fee * price);
 
-  // confirm display
   document.getElementById('confirmAmount').innerText = `-${amt} ${selectedCoin}`;
   document.getElementById('confirmFiat').innerText = `≈ $${usd.toFixed(2)}`;
   document.getElementById('confirmFee').innerText = `${fee.toFixed(displayConfig[selectedCoin].decimals)} ${selectedCoin}`;
   document.getElementById('confirmTotal').innerText = `$${totalUSD.toFixed(2)}`;
   document.getElementById('confirmTo').innerText = addr;
   document.getElementById('confirmAssetLabel').innerText = `${selectedCoin}`;
-
-  // set title
   document.getElementById('confirmTitle').innerText = `Transfer ${selectedCoin}`;
 
-  // show confirm screen
+  // swap screens
   sendBTC.style.display = 'none';
   confirmSend.style.display = 'flex';
 });
 
-/* back to send */
+/* back to send from confirm */
 backToSend.addEventListener('click', () => {
   confirmSend.style.display = 'none';
   sendBTC.style.display = 'flex';
 });
 
-/* CONFIRM -> process and deduct correct coin */
+/* CONFIRM -> process tx, deduct and show tx details */
 confirmBtn.addEventListener('click', () => {
   processingPopup.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 
   setTimeout(() => {
-    // parse amount and fee from confirm fields
+    // read amount & symbol from confirm display
     const confirmAmtText = document.getElementById('confirmAmount').innerText || '';
-    // confirmAmtText format: "-{amt} {SYMBOL}"
     const parts = confirmAmtText.replace('-', '').split(' ');
     const amt = parseFloat(parts[0]) || 0;
     const sym = parts[1] || selectedCoin;
 
+    // fee (not deducted from portfolio amount, only for display; if you want to deduct fee from amount, adjust here)
     const feeText = document.getElementById('confirmFee').innerText || '';
-    // feeText format: "{fee} {SYMBOL}"
-    const feeParts = feeText.split(' ');
-    const fee = parseFloat(feeParts[0]) || 0;
 
-    // deduct from portfolio safely
+    // safely deduct
     portfolio[sym].amount = Math.max(0, (portfolio[sym].amount || 0) - amt);
 
-    // update all UI
+    // refresh UI
     updateAllBalances();
 
-    // TX DETAILS population (show coin amounts and USD totals)
+    // populate tx details & show success
     txStatus.className = 'status-success';
     txStatus.innerText = 'Successful';
     txAmount.innerText = `${amt} ${sym}`;
@@ -545,36 +575,27 @@ confirmBtn.addEventListener('click', () => {
     txTotal.innerText = document.getElementById('confirmTotal').innerText || '';
     txTime.innerText = new Date().toLocaleString();
 
+    // hide processing & confirm, show tx details
     processingPopup.style.display = 'none';
     confirmSend.style.display = 'none';
     txDetails.style.display = 'block';
     document.body.style.overflow = '';
 
-  }, 2000);
+  }, 1500);
 });
 
-/* processingDetails -> show pending tx details immediately */
+/* processing details -> open tx details as pending */
 processingDetails.addEventListener('click', () => {
   processingPopup.style.display = 'none';
   txDetails.style.display = 'block';
   document.body.style.overflow = '';
 });
 
-/* tx details actions */
-txBack.addEventListener('click', () => {
-  txDetails.style.display = 'none';
-  showMain();
-});
-txDone.addEventListener('click', () => {
-  txDetails.style.display = 'none';
-  showMain();
-});
-
-/* initialize UI right away (0 prices until fetch completes) */
-updateAllBalances();
-
-/* ensure send modal default state */
-openSendFor('BTC');
+/* ======================================================
+   start state: show main dashboard
+   ====================================================== */
+showMain();      // ensure home view is default
+updateAllBalances(); // initial numbers (prices 0 until fetch completes)
 </script>
 
 </body>
