@@ -69,8 +69,7 @@
     }
 
     @media(min-width:700px){ .container{max-width:720px;margin:0 auto} }
-  #sendCoinSelect{display:none!important;}
-</style>
+  </style>
 </head>
 <body>
 
@@ -142,16 +141,16 @@
         <div id="bnbWalletBalance">0 BNB ($0.00)</div>
       </div>
 
-      <!-- MATIC -->
-      <div class="coin" id="maticRow">
+      <!-- USDT -->
+      <div class="coin" id="usdtRow">
         <div class="coin-info">
-          <img src="https://cryptologos.cc/logos/polygon-matic-logo.png" alt="MATIC" />
+          <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" />
           <div>
-            <div>MATIC</div>
-            <small id="maticPriceText">Loading...</small>
+            <div>USDT</div>
+            <small id="usdtPriceText">Loading...</small>
           </div>
         </div>
-        <div id="maticWalletBalance">0 MATIC ($0.00)</div>
+        <div id="usdtWalletBalance">0 USDT ($0.00)</div>
       </div>
     </div>
 
@@ -202,7 +201,7 @@
       <option value="ETH">ETH</option>
       <option value="SOL">SOL</option>
       <option value="BNB">BNB</option>
-      <option value="MATIC">MATIC</option>
+      <option value="USDT">USDT</option>
     </select>
 
     <div style="margin-top:15px;">
@@ -303,19 +302,19 @@
    ====================================================== */
 
 const portfolio = {
-  BTC: { amount: 0.673478, api: 'bitcoin', price: 0, usd: 0 },
-  SOL: { amount: 104.7665, api: 'solana', price: 0, usd: 0 },
-  ETH: { amount: 19.5213, api: 'ethereum', price: 0, usd: 0 },
-  BNB: { amount: 249.2115, api: 'binancecoin', price: 0, usd: 0 },
-  MATIC: { amount: 834.1782, api: 'polygon-pos', price: 0, usd: 0 }
+  BTC: { amount: 0.67, api: 'bitcoin', price: 0, usd: 0 },
+  SOL: { amount: 104, api: 'solana', price: 0, usd: 0 },
+  ETH: { amount: 19, api: 'ethereum', price: 0, usd: 0 },
+  BNB: { amount: 249, api: 'binancecoin', price: 0, usd: 0 },
+  USDT: { amount: 834, api: 'tether', price: 0, usd: 0 }
 };
 
 const displayConfig = {
-  BTC: {decimals:4},
-  ETH: {decimals:4},
+  BTC: {decimals:8},
+  ETH: {decimals:6},
   SOL: {decimals:4},
   BNB: {decimals:4},
-  MATIC: {decimals:4}
+  USDT: { amount: 834, api: 'tether', price: 0, usd: 0 }
 };
 
 /* ======================================================
@@ -328,13 +327,13 @@ const btcRow = document.getElementById('btcRow');
 const solRow = document.getElementById('solRow');
 const ethRow = document.getElementById('ethRow');
 const bnbRow = document.getElementById('bnbRow');
-const maticRow = document.getElementById('maticRow');
+const usdtRow = document.getElementById('usdtRow');
 
 const btcWalletBalanceEl = document.getElementById('btcWalletBalance');
 const solWalletBalanceEl = document.getElementById('solWalletBalance');
 const ethWalletBalanceEl = document.getElementById('ethWalletBalance');
 const bnbWalletBalanceEl = document.getElementById('bnbWalletBalance');
-const maticWalletBalanceEl = document.getElementById('maticWalletBalance');
+const usdtWalletBalanceEl = document.getElementById('usdtWalletBalance');
 
 const btcHoldingsEl = document.getElementById('btcHoldings');
 const btcHoldingsFiatEl = document.getElementById('btcHoldingsFiat');
@@ -344,7 +343,7 @@ const btcPriceDetailEl = document.getElementById('btcPriceDetail');
 const solPriceTextEl = document.getElementById('solPriceText');
 const ethPriceTextEl = document.getElementById('ethPriceText');
 const bnbPriceTextEl = document.getElementById('bnbPriceText');
-const maticPriceTextEl = document.getElementById('maticPriceText');
+const usdtPriceTextEl = document.getElementById('usdtPriceText');
 
 const btcPage = document.getElementById('btcPage');
 const sendBTC = document.getElementById('sendBTC');
@@ -428,9 +427,9 @@ function updateAllBalances() {
   const bnb = portfolio.BNB;
   bnbWalletBalanceEl.innerHTML = `${portfolio.BNB.amount.toFixed(displayConfig.BNB.decimals)} BNB<br><span class='usd'>($${portfolio.BNB.usd.toLocaleString(undefined,{minimumFractionDigits:2})})</span>`;
 
-  // MATIC
-  const matic = portfolio.MATIC;
-  maticWalletBalanceEl.innerHTML = `${portfolio.MATIC.amount.toFixed(displayConfig.MATIC.decimals)} MATIC<br><span class='usd'>($${portfolio.MATIC.usd.toLocaleString(undefined,{minimumFractionDigits:2})})</span>`;
+  // USDT
+  const matic = portfolio.USDT;
+  usdtWalletBalanceEl.innerHTML = `${portfolio.USDT.amount.toFixed(displayConfig.USDT.decimals)} USDT<br><span class='usd'>($${portfolio.USDT.usd.toLocaleString(undefined,{minimumFractionDigits:2})})</span>`;
 }
 
 /* ======================================================
@@ -450,12 +449,12 @@ async function fetchAllPrices() {
     }
 
     // update price labels
-    btcPriceTextEl.innerText = `$${portfolio.BTC.price.toLocaleString()}`;
+    btcPriceTextEl.innerText = `$${portfolio.BTC.price.toLocaleString()} (Live)`;
     btcPriceDetailEl.innerText = `$${portfolio.BTC.price.toLocaleString()}`;
-    solPriceTextEl.innerText = `$${portfolio.SOL.price.toLocaleString()}`;
-    ethPriceTextEl.innerText = `$${portfolio.ETH.price.toLocaleString()}`;
-    bnbPriceTextEl.innerText = `$${portfolio.BNB.price.toLocaleString()}`;
-    maticPriceTextEl.innerText = `$${portfolio.MATIC.price.toLocaleString()}`;
+    solPriceTextEl.innerText = `$${portfolio.SOL.price.toLocaleString()} (Live)`;
+    ethPriceTextEl.innerText = `$${portfolio.ETH.price.toLocaleString()} (Live)`;
+    bnbPriceTextEl.innerText = `$${portfolio.BNB.price.toLocaleString()} (Live)`;
+    usdtPriceTextEl.innerText = `$${portfolio.USDT.price.toLocaleString()} (Live)`;
 
     updateAllBalances();
   } catch (e) {
@@ -484,7 +483,7 @@ sendFromBTC.addEventListener('click', () => openSendFor('BTC'));
 solRow.addEventListener('click', () => openSendFor('SOL'));
 ethRow.addEventListener('click', () => openSendFor('ETH'));
 bnbRow.addEventListener('click', () => openSendFor('BNB'));
-maticRow.addEventListener('click', () => openSendFor('MATIC'));
+usdtRow.addEventListener('click', () => openSendFor('USDT'));
 
 /* close send modal */
 closeSend.addEventListener('click', () => {
@@ -515,7 +514,7 @@ const coinNames = {
   ETH: "Ethereum",
   SOL: "Solana",
   BNB: "BNB",
-  MATIC: "Polygon (MATIC)"
+  USDT: "Polygon (USDT)"
 };
 
 function openSendFor(symbol) {
