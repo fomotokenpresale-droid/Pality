@@ -381,6 +381,47 @@ const viewDetailsBtn = document.getElementById('view-details');
 const successDoneBtn = document.getElementById('success-done');
 
 /* ======================================================
+   CACHING: localStorage helpers for fast reload
+   ====================================================== */
+
+const CACHE_KEY = 'wallet_cached_prices_v1';
+const CACHE_TTL_MS = 1000 * 60 * 10; // 10 minutes TTL (you can change)
+
+function savePricesToCache() {
+  // store prices by symbol
+  const payload = {
+    timestamp: Date.now(),
+    prices: {}
+  };
+  for (const sym in portfolio) {
+    payload.prices[sym] = portfolio[sym].price || 0;
+  }
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(payload));
+  } catch (e) {
+    // ignore storage errors
+  }
+}
+
+function loadPricesFromCache() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !parsed.prices) return false;
+    // optionally check staleness if you want; we still apply cached values regardless
+    const age = Date.now() - (parsed.timestamp || 0);
+    // apply cached prices
+    for (const sym in parsed.prices) {
+      if (portfolio[sym]) portfolio[sym].price = parsed.prices[sym];
+    }
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+/* ======================================================
    UTILS: hide/show pages cleanly
    ====================================================== */
 function hideAllPages() {
@@ -390,6 +431,8 @@ function hideAllPages() {
 function showMain() {
   hideAllPages();
   document.getElementById('home-page').style.display = 'block';
+  // do a background refresh when returning to home to ensure numbers are up-to-date
+  fetchAllPrices().catch(()=>{});
 }
 function showSuccessScreen() {
   hideAllPages();
@@ -412,8 +455,8 @@ function updateAllBalances() {
   // BTC
   const btc = portfolio.BTC;
   btcWalletBalanceEl.innerText = `${btc.amount.toFixed(displayConfig.BTC.decimals)} BTC ($${btc.usd.toLocaleString(undefined,{minimumFractionDigits:2})})`;
-  btcHoldingsEl.innerText = `${btc.amount.toFixed(displayConfig.BTC.decimals)} BTC`;
-  btcHoldingsFiatEl.innerText = `≈ $${btc.usd.toFixed(2)}`;
+  if (btcHoldingsEl) btcHoldingsEl.innerText = `${btc.amount.toFixed(displayConfig.BTC.decimals)} BTC`;
+  if (btcHoldingsFiatEl) btcHoldingsFiatEl.innerText = `≈ $${btc.usd.toFixed(2)}`;
 
   // SOL
   const sol = portfolio.SOL;
@@ -433,22 +476,35 @@ function updateAllBalances() {
 }
 
 /* ======================================================
-   PRICE FETCHING
+   PRICE FETCHING (background + cache save)
    ====================================================== */
+let lastFetchAt = 0;
+let fetching = false;
+
 async function fetchAllPrices() {
+  // prevent overlapping fetches
+  if (fetching) return;
+  fetching = true;
   try {
     const ids = Object.values(portfolio).map(c => c.api).join(',');
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`;
-    const res = await fetch(url);
+    // try fetch with timeout (10s)
+    const controller = new AbortController();
+    const timeout = setTimeout(()=>controller.abort(), 10000);
+
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeout);
+    if (!res.ok) throw new Error('Fetch failed');
+
     const data = await res.json();
 
     for (const sym in portfolio) {
       const apiName = portfolio[sym].api;
-      const price = data && data[apiName] && data[apiName].usd ? data[apiName].usd : 0;
+      const price = data && data[apiName] && data[apiName].usd ? data[apiName].usd : portfolio[sym].price || 0;
       portfolio[sym].price = price;
     }
 
-    // update price labels
+    // update labels
     btcPriceTextEl.innerText = `$${portfolio.BTC.price.toLocaleString()} (Live)`;
     btcPriceDetailEl.innerText = `$${portfolio.BTC.price.toLocaleString()}`;
     solPriceTextEl.innerText = `$${portfolio.SOL.price.toLocaleString()} (Live)`;
@@ -456,15 +512,20 @@ async function fetchAllPrices() {
     bnbPriceTextEl.innerText = `$${portfolio.BNB.price.toLocaleString()} (Live)`;
     maticPriceTextEl.innerText = `$${portfolio.MATIC.price.toLocaleString()} (Live)`;
 
+    // recalc UI
     updateAllBalances();
+
+    // save fetched prices to cache
+    savePricesToCache();
+
+    lastFetchAt = Date.now();
   } catch (e) {
-    console.error('Price fetch failed', e);
+    // network failed — keep using cached values
+    console.warn('Price fetch failed (keeping cached values):', e);
+  } finally {
+    fetching = false;
   }
 }
-
-/* initial fetch + periodic refresh */
-fetchAllPrices();
-setInterval(fetchAllPrices, 10000);
 
 /* ======================================================
    NAVIGATION & EVENTS (single-page behavior)
@@ -493,7 +554,6 @@ closeSend.addEventListener('click', () => {
 
 /* tx details back/done */
 txBack.addEventListener('click', () => {
-  // if user comes from success-screen, show success; otherwise show main
   showMain();
 });
 txDone.addEventListener('click', () => {
@@ -632,6 +692,9 @@ confirmBtn.addEventListener('click', () => {
     showSuccessScreen();
     document.body.style.overflow = '';
 
+    // save current prices to cache after transaction (ensures done -> reload instant)
+    savePricesToCache();
+
   }, 1500);
 });
 
@@ -648,6 +711,8 @@ viewDetailsBtn.addEventListener('click', () => {
   txDetails.style.display = 'block';
 });
 successDoneBtn.addEventListener('click', () => {
+  // refresh prices once user leaves success screen for freshest numbers
+  fetchAllPrices().catch(()=>{});
   showMain();
 });
 
@@ -656,14 +721,35 @@ txBack.addEventListener('click', () => {
   showMain();
 });
 txDone.addEventListener('click', () => {
+  // refresh prices when leaving tx details
+  fetchAllPrices().catch(()=>{});
   showMain();
 });
+
+/* ======================================================
+   BOOTSTRAP: apply cache first (fast), then fetch in background
+   ====================================================== */
+
+// if cached prices exist, apply them first (fast UI)
+const hadCache = loadPricesFromCache();
+updateAllBalances();
+// update price text labels even if cached
+btcPriceTextEl.innerText = `$${(portfolio.BTC.price || 0).toLocaleString()}${hadCache ? ' (Cached)' : ''}`;
+btcPriceDetailEl.innerText = `$${(portfolio.BTC.price || 0).toLocaleString()}`;
+solPriceTextEl.innerText = `$${(portfolio.SOL.price || 0).toLocaleString()}${hadCache ? ' (Cached)' : ''}`;
+ethPriceTextEl.innerText = `$${(portfolio.ETH.price || 0).toLocaleString()}${hadCache ? ' (Cached)' : ''}`;
+bnbPriceTextEl.innerText = `$${(portfolio.BNB.price || 0).toLocaleString()}${hadCache ? ' (Cached)' : ''}`;
+maticPriceTextEl.innerText = `$${(portfolio.MATIC.price || 0).toLocaleString()}${hadCache ? ' (Cached)' : ''}`;
+
+// background fetch to replace cached values with live ones when available
+fetchAllPrices().catch(()=>{});
+setInterval(fetchAllPrices, 10000); // continue refreshing in background
 
 /* ======================================================
    start state: show main dashboard
    ====================================================== */
 showMain();      // ensure home view is default
-updateAllBalances(); // initial numbers (prices 0 until fetch completes)
+updateAllBalances(); // initial numbers (prices maybe cached until fetch finishes)
 </script>
 
 </body>
