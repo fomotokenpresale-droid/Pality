@@ -72,11 +72,45 @@
   
 #sendCoinSelect { display: none !important; }
 
-.input-wrapper{position:relative;width:100%;}
-.input-wrapper .right-icons, .input-wrapper .amount-icons{
- position:absolute; right:12px; top:50%; transform:translateY(-50%);
- display:flex; gap:8px; font-size:12px;
+.input-wrapper {
+    position: relative;
+    width: 100%;
 }
+
+/* Reserve space for icons so they never overlap typing */
+.input-wrapper input {
+    padding-right: 70px;
+    box-sizing: border-box;
+}
+
+/* Protected icon box */
+.right-icons {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 8px;
+    background: transparent;
+    pointer-events: auto;
+}
+
+/* Icon styling */
+.paste, .qr {
+    color: #0a53ff;
+    font-weight: 600;
+}
+
+/* Amount right-side box also protected */
+.amount-icons {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 8px;
+}
+
 .paste{color:#0a53ff;}
 .qr{color:#0a53ff;}
 .btc{color:#777;}
