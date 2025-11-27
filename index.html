@@ -242,17 +242,22 @@
 
     <div class="footer">
       <div><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+
   <!-- house -->
-  <g transform="translate(0,0)">
+  <g>
     <!-- roof -->
-    <polygon points="24,6 6,20 10,20 10,36 38,36 38,20 42,20" fill="#1633FF"/>
-    <!-- body (slightly overlapped by roof shape above already) -->
+    <polygon points="24,6 6,20 10,20 10,34 38,34 38,20 42,20" fill="#1633FF"/>
+
     <!-- door -->
-    <rect x="20.5" y="24" width="7" height="10" rx="0.8" fill="#FFFFFF"/>
+    <rect x="20.5" y="23" width="7" height="9" rx="0.8" fill="#FFFFFF"/>
   </g>
 
-  <!-- label -->
-  <text x="24" y="45" font-family="Arial, Helvetica, sans-serif" font-size="7.2" text-anchor="middle" fill="#1633FF">Home</text>
+  <!-- label (shifted upward to fit inside 48px height) -->
+  <text x="24" y="46" font-family="Arial, Helvetica, sans-serif"
+        font-size="7.2" text-anchor="middle" fill="#1633FF">
+    Home
+  </text>
+
 </svg>
 </div>
       <div><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
@@ -293,25 +298,28 @@
   <text x="24" y="45" font-family="Arial, Helvetica, sans-serif" font-size="7.2" text-anchor="middle" fill="#9EA3A8">Earn</text>
 </svg>
 </div>
-      <div><svg width="48" height="70" viewBox="0 0 48 70" xmlns="http://www.w3.org/2000/svg">
+      <div><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
 
-  <!-- Rotated group (circle + diamond + white dot) -->
-  <g transform="rotate(45 24 24)">
+  <!-- Rotated group (circle + diamond + dot) -->
+  <g transform="rotate(45 24 18)">
     <!-- Outer circle -->
-    <circle cx="24" cy="24" r="12" fill="#A0A5AB"/>
+    <circle cx="24" cy="18" r="10" fill="#A0A5AB"/>
 
-    <!-- Diamond / compass needle (darker ash) -->
-    <polygon points="24,17 27,24 24,31 21,24" fill="#60656B"/>
+    <!-- Diamond / compass needle -->
+    <polygon points="24,13 27,18 24,23 21,18" fill="#60656B"/>
 
-    <!-- Tiny white circle inside the diamond -->
-    <circle cx="24" cy="24" r="2" fill="#FFFFFF"/>
+    <!-- Tiny white circle -->
+    <circle cx="24" cy="18" r="1.8" fill="#FFFFFF"/>
   </g>
 
-  <!-- Label (NOT rotated) -->
-  <text x="24" y="60" font-size="10" font-family="Arial, sans-serif" 
+  <!-- Label -->
+  <text x="24" y="42" font-size="8" font-family="Arial, sans-serif"
         text-anchor="middle" fill="#A0A5AB">
     Discover
   </text>
+
+</svg>
+
 </svg>
 </div>
     </div>
