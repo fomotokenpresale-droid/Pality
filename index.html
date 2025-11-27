@@ -42,11 +42,9 @@
     /* small additions for modal controls so they look okay */
     .select-coin { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; margin-top:10px; }
     .input { width:100%; padding:14px; margin-top:6px; border-radius:12px; border:1px solid #ccc; font-size:16px; }
-/* Prevent long addresses from spilling outside the WALLET field */
-.transfer-box input,
-#transferWallet,
-#walletInput,
-.wallet-input {
+#confirmTo {
+    display: inline-block;
+    max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
