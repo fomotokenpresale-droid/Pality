@@ -77,13 +77,13 @@
     width: 100%;
 }
 
-/* Reserve space for icons so they never overlap typing */
+/* Reserve space so text never overlaps icons */
 .input-wrapper input {
     padding-right: 70px;
     box-sizing: border-box;
 }
 
-/* Protected icon box */
+/* PROTECTED ICON BOX (centered vertically) */
 .right-icons {
     position: absolute;
     right: 12px;
@@ -93,15 +93,19 @@
     gap: 8px;
     background: transparent;
     pointer-events: auto;
+
+    /* Perfect vertical alignment */
+    align-items: center;
 }
 
-/* Icon styling */
-.paste, .qr {
+/* Icons NOT bold */
+.paste,
+.qr {
     color: #0a53ff;
-    font-weight: 600;
+    font-weight: normal;
 }
 
-/* Amount right-side box also protected */
+/* Keeps amount input icons aligned too */
 .amount-icons {
     position: absolute;
     right: 12px;
@@ -109,12 +113,9 @@
     transform: translateY(-50%);
     display: flex;
     gap: 8px;
+    align-items: center;
 }
 
-.paste{color:#0a53ff;}
-.qr{color:#0a53ff;}
-.btc{color:#777;}
-.max{color:#0a53ff;}
 </style>
 </head>
 <body>
