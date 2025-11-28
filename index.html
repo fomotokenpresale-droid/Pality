@@ -24,14 +24,27 @@
     .wallet-coin-balance{margin-left:auto;text-align:right;}
 .coin { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #ddd; cursor: pointer; }
     .coin-info { display: flex; align-items: center; gap: 12px; }
- /* Coin tap animation — unbreakable */
-.coin, .coin * {
-    transition: transform 0.15s ease, opacity 0.15s ease !important;
+/* Ensure active/tap state works on mobile */
+* {
+    -webkit-touch-callout: none;
 }
 
-.coin:active, .coin:active * {
-    transform: scale(0.90) !important;
-    opacity: 0.75 !important;
+/* Coin tap animation — mobile safe */
+.coin {
+    transition: transform 0.15s ease, opacity 0.15s ease;
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+/* Press effect */
+.coin:active {
+    transform: scale(0.92);
+    opacity: 0.75;
+}
+
+/* Ensure inner elements do not block the :active */
+.coin * {
+    pointer-events: none;
 }
     .coin img { width: 32px; height: 32px; }
     .footer { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ccc; }
