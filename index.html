@@ -158,6 +158,38 @@
   width: 100%;
   box-sizing: border-box;
 }
+    .asset-tabs {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px;
+  margin-top: 20px;
+}
+
+.asset-tabs .tab {
+  font-size: 22px;
+  font-weight: 500;
+  color: #8A8F97;
+  position: relative;
+  cursor: pointer;
+}
+
+.asset-tabs .tab.active {
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.asset-tabs .tab.active::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -4px;
+  width: 28px;
+  height: 4px;
+  border-radius: 4px;
+  background: #0047FF; /* Bright blue underline */
+}
 </style>
 </head>
 <body>
@@ -288,7 +320,10 @@
   <path d="M30 26v4l3 2" stroke="#000" stroke-width="2" stroke-linecap="round" fill="none"/>
 </svg></div>History</div>
     </div>
-
+<div class="asset-tabs">
+  <div class="tab active">Crypto</div>
+  <div class="tab">NFTs</div>
+</div>
     <div class="crypto-list">
       <!-- BTC -->
       <div class="coin" id="btcRow">
