@@ -822,19 +822,21 @@ function updatePriceText(symbol, elem) {
 
   const priceDisplay = formatPrice(price);
 
-  // format percent with sign
-  const sign = pnlPct > 0 ? '+' : (pnlPct < 0 ? '' : ''); // negative automatically has -
-  const pctText = (entry && entry !== 0) ? ` (${sign}${pnlPct.toFixed(2)}%)` : '';
+  // Format percent with no brackets
+  const pctText = `${pnlPct.toFixed(2)}%`;
 
-  const cls = pnlPct > 0 ? 'pnl-up' : (pnlPct < 0 ? 'pnl-down' : '');
+  // DARKER green & red
+  const pnlColor = pnlPct >= 0 ? "#008b00" : "#ff0000";
 
   if (!elem) return;
 
-  if (pctText) {
-    elem.innerHTML = `${priceDisplay} <span class="${cls}">${pctText}</span>`;
-  } else {
-    elem.innerHTML = `${priceDisplay}`;
-  }
+  // Final text injected into HTML
+  elem.innerHTML = `
+    ${priceDisplay}
+    <span style="color:${pnlColor}; font-weight:600;">
+      ${pctText}
+    </span>
+  `;
 }
 
 /* ======================================================
