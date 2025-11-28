@@ -855,26 +855,52 @@ function updateAllBalances() {
 
   // BTC
   const btc = portfolio.BTC;
-  btcWalletBalanceEl.innerHTML = `${btc.amount.toFixed(displayConfig.BTC.decimals)} BTC<br><span class='usd'><span class='usd' style=\"font-size:12px;color:#A0A5AB;\">\${formatUSD(btc.usd)}</span></span>`;
+btcWalletBalanceEl.innerHTML =
+  `<div style="text-align:right;">
+     ${btc.amount.toFixed(displayConfig.BTC.decimals)} BTC<br>
+     <span class='usd' style="font-size:12px;color:#A0A5AB;">
+       ${formatUSD(btc.usd)}
+     </span>
+   </div>`;
   btcHoldingsEl.innerText = `${btc.amount.toFixed(displayConfig.BTC.decimals)} BTC`;
   btcHoldingsFiatEl.innerText = `≈ ${formatUSD(btc.usd)}`;
 
   // SOL
   const sol = portfolio.SOL;
-  solWalletBalanceEl.innerHTML = `${sol.amount.toFixed(displayConfig.SOL.decimals)} SOL<br><span class='usd'><span class='usd' style=\"font-size:12px;color:#A0A5AB;\">\${formatUSD(sol.usd)}</span></span>`;
-
+  solWalletBalanceEl.innerHTML =
+  `<div style="text-align:right;">
+     ${sol.amount.toFixed(displayConfig.SOL.decimals)} SOL<br>
+     <span class='usd' style="font-size:12px;color:#A0A5AB;">
+       ${formatUSD(sol.usd)}
+     </span>
+   </div>`;
   // ETH
   const eth = portfolio.ETH;
-  ethWalletBalanceEl.innerHTML = `${eth.amount.toFixed(displayConfig.ETH.decimals)} ETH<br><span class='usd'><span class='usd' style=\"font-size:12px;color:#A0A5AB;\">\${formatUSD(eth.usd)}</span></span>`;
-
+ethWalletBalanceEl.innerHTML =
+  `<div style="text-align:right;">
+     ${eth.amount.toFixed(displayConfig.ETH.decimals)} ETH<br>
+     <span class='usd' style="font-size:12px;color:#A0A5AB;">
+       ${formatUSD(eth.usd)}
+     </span>
+   </div>`;
   // BNB
   const bnb = portfolio.BNB;
-  bnbWalletBalanceEl.innerHTML = `${bnb.amount.toFixed(displayConfig.BNB.decimals)} BNB<br><span class='usd'><span class='usd' style=\"font-size:12px;color:#A0A5AB;\">\${formatUSD(bnb.usd)}</span></span>`;
-
+bnbWalletBalanceEl.innerHTML =
+  `<div style="text-align:right;">
+     ${bnb.amount.toFixed(displayConfig.BNB.decimals)} BNB<br>
+     <span class='usd' style="font-size:12px;color:#A0A5AB;">
+       ${formatUSD(bnb.usd)}
+     </span>
+   </div>`;
   // USDT
   const usdt = portfolio.USDT;
-  usdtWalletBalanceEl.innerHTML = `${usdt.amount.toFixed(displayConfig.USDT.decimals)} USDT<br><span class='usd'><span class='usd' style=\"font-size:12px;color:#A0A5AB;\">\${formatUSD(usdt.usd)}</span></span>`;
-
+usdtWalletBalanceEl.innerHTML =
+  `<div style="text-align:right;">
+     ${usdt.amount.toFixed(displayConfig.USDT.decimals)} USDT<br>
+     <span class='usd' style="font-size:12px;color:#A0A5AB;">
+       ${formatUSD(usdt.usd)}
+     </span>
+   </div>`;
   // update the small price + pnl texts (Option 2: appended in price text)
   updatePriceText('BTC', btcPriceTextEl);
   updatePriceText('SOL', solPriceTextEl);
