@@ -342,7 +342,7 @@
             <small id="btcPriceText" class="price-small">Loading...</small>
           </div>
         </div>
-        <div id="btcWalletBalance" class="wallet-coin-balance">0 BTC ($0.00)</div>
+        <div id="btcWalletBalance" class="wallet-coin-balance">0 BTC <span class='usd' style=\"font-size:12px;color:#A0A5AB;\">$0.00</span></div>
       </div>
 
       <!-- SOL -->
@@ -354,7 +354,7 @@
             <small id="solPriceText" class="price-small">Loading...</small>
           </div>
         </div>
-        <div id="solWalletBalance" class="wallet-coin-balance">0 SOL ($0.00)</div>
+        <div id="solWalletBalance" class="wallet-coin-balance">0 SOL <span class='usd' style=\"font-size:12px;color:#A0A5AB;\">$0.00</span></div>
       </div>
 
       <!-- ETH -->
@@ -366,7 +366,7 @@
             <small id="ethPriceText" class="price-small">Loading...</small>
           </div>
         </div>
-        <div id="ethWalletBalance" class="wallet-coin-balance">0 ETH ($0.00)</div>
+        <div id="ethWalletBalance" class="wallet-coin-balance">0 ETH <span class='usd' style=\"font-size:12px;color:#A0A5AB;\">$0.00</span></div>
       </div>
 
       <!-- BNB -->
@@ -378,7 +378,7 @@
             <small id="bnbPriceText" class="price-small">Loading...</small>
           </div>
         </div>
-        <div id="bnbWalletBalance" class="wallet-coin-balance">0 BNB ($0.00)</div>
+        <div id="bnbWalletBalance" class="wallet-coin-balance">0 BNB <span class='usd' style=\"font-size:12px;color:#A0A5AB;\">$0.00</span></div>
       </div>
 
       <!-- USDT -->
@@ -390,7 +390,7 @@
             <small id="usdtPriceText" class="price-small">Loading...</small>
           </div>
         </div>
-        <div id="usdtWalletBalance" class="wallet-coin-balance">0 USDT ($0.00)</div>
+        <div id="usdtWalletBalance" class="wallet-coin-balance">0 USDT <span class='usd' style=\"font-size:12px;color:#A0A5AB;\">$0.00</span></div>
       </div>
     </div>
 
@@ -855,25 +855,25 @@ function updateAllBalances() {
 
   // BTC
   const btc = portfolio.BTC;
-  btcWalletBalanceEl.innerHTML = `${btc.amount.toFixed(displayConfig.BTC.decimals)} BTC<br><span class='usd'>(${formatUSD(btc.usd)})</span>`;
+  btcWalletBalanceEl.innerHTML = `${btc.amount.toFixed(displayConfig.BTC.decimals)} BTC<br><span class='usd'><span class='usd' style=\"font-size:12px;color:#A0A5AB;\">\${formatUSD(btc.usd)}</span></span>`;
   btcHoldingsEl.innerText = `${btc.amount.toFixed(displayConfig.BTC.decimals)} BTC`;
   btcHoldingsFiatEl.innerText = `≈ ${formatUSD(btc.usd)}`;
 
   // SOL
   const sol = portfolio.SOL;
-  solWalletBalanceEl.innerHTML = `${sol.amount.toFixed(displayConfig.SOL.decimals)} SOL<br><span class='usd'>(${formatUSD(sol.usd)})</span>`;
+  solWalletBalanceEl.innerHTML = `${sol.amount.toFixed(displayConfig.SOL.decimals)} SOL<br><span class='usd'><span class='usd' style=\"font-size:12px;color:#A0A5AB;\">\${formatUSD(sol.usd)}</span></span>`;
 
   // ETH
   const eth = portfolio.ETH;
-  ethWalletBalanceEl.innerHTML = `${eth.amount.toFixed(displayConfig.ETH.decimals)} ETH<br><span class='usd'>(${formatUSD(eth.usd)})</span>`;
+  ethWalletBalanceEl.innerHTML = `${eth.amount.toFixed(displayConfig.ETH.decimals)} ETH<br><span class='usd'><span class='usd' style=\"font-size:12px;color:#A0A5AB;\">\${formatUSD(eth.usd)}</span></span>`;
 
   // BNB
   const bnb = portfolio.BNB;
-  bnbWalletBalanceEl.innerHTML = `${bnb.amount.toFixed(displayConfig.BNB.decimals)} BNB<br><span class='usd'>(${formatUSD(bnb.usd)})</span>`;
+  bnbWalletBalanceEl.innerHTML = `${bnb.amount.toFixed(displayConfig.BNB.decimals)} BNB<br><span class='usd'><span class='usd' style=\"font-size:12px;color:#A0A5AB;\">\${formatUSD(bnb.usd)}</span></span>`;
 
   // USDT
   const usdt = portfolio.USDT;
-  usdtWalletBalanceEl.innerHTML = `${usdt.amount.toFixed(displayConfig.USDT.decimals)} USDT<br><span class='usd'>(${formatUSD(usdt.usd)})</span>`;
+  usdtWalletBalanceEl.innerHTML = `${usdt.amount.toFixed(displayConfig.USDT.decimals)} USDT<br><span class='usd'><span class='usd' style=\"font-size:12px;color:#A0A5AB;\">\${formatUSD(usdt.usd)}</span></span>`;
 
   // update the small price + pnl texts (Option 2: appended in price text)
   updatePriceText('BTC', btcPriceTextEl);
