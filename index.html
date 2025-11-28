@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wallet UI Replica</title>
+  <title>Wallet UI Replica — With PnL</title>
   <style>
     body { margin: 0; font-family: Arial, sans-serif; background: #f6f7fb; color: #1a1a1a; }
     .header { padding: 20px; text-align: center; font-size: 20px; font-weight: 600; background: white; position: sticky; top: 0; }
@@ -191,7 +191,13 @@
   background: #0047FF;
 }
 
-</style>
+/* PnL styles (bright colors as requested) */
+.pnl-up { color: #10b981; font-weight: 600; }
+.pnl-down { color: #ef4444; font-weight: 600; }
+
+/* smaller muted price text */
+.price-small { color: #6b7280; font-size: 12px; display:block; margin-top:2px; }
+  </style>
 </head>
 <body>
 
@@ -332,7 +338,7 @@
           <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" alt="BTC" />
           <div>
             <div>BTC</div>
-            <small id="btcPriceText">Loading...</small>
+            <small id="btcPriceText" class="price-small">Loading...</small>
           </div>
         </div>
         <div id="btcWalletBalance">0 BTC ($0.00)</div>
@@ -344,7 +350,7 @@
           <img src="https://cryptologos.cc/logos/solana-sol-logo.png" alt="SOL" />
           <div>
             <div>SOL</div>
-            <small id="solPriceText">Loading...</small>
+            <small id="solPriceText" class="price-small">Loading...</small>
           </div>
         </div>
         <div id="solWalletBalance">0 SOL ($0.00)</div>
@@ -356,7 +362,7 @@
           <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" alt="ETH" />
           <div>
             <div>ETH</div>
-            <small id="ethPriceText">Loading...</small>
+            <small id="ethPriceText" class="price-small">Loading...</small>
           </div>
         </div>
         <div id="ethWalletBalance">0 ETH ($0.00)</div>
@@ -368,7 +374,7 @@
           <img src="https://cryptologos.cc/logos/bnb-bnb-logo.png" alt="BNB" />
           <div>
             <div>BNB</div>
-            <small id="bnbPriceText">Loading...</small>
+            <small id="bnbPriceText" class="price-small">Loading...</small>
           </div>
         </div>
         <div id="bnbWalletBalance">0 BNB ($0.00)</div>
@@ -380,7 +386,7 @@
           <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" />
           <div>
             <div>USDT</div>
-            <small id="usdtPriceText">Loading...</small>
+            <small id="usdtPriceText" class="price-small">Loading...</small>
           </div>
         </div>
         <div id="usdtWalletBalance">0 USDT ($0.00)</div>
@@ -663,7 +669,7 @@
 
 <script>
 /* ======================================================
-   MASTER PORTFOLIO + CONFIG
+   MASTER PORTFOLIO + CONFIG (with user entry prices)
    ====================================================== */
 
 const portfolio = {
@@ -674,12 +680,22 @@ const portfolio = {
   USDT: { amount: 834, api: 'tether', price: 0, usd: 0 }
 };
 
+// display decimals config
 const displayConfig = {
   BTC: {decimals:4},
   ETH: {decimals:4},
   SOL: {decimals:4},
   BNB: {decimals:4},
-  USDT: { amount: 834, api: 'tether', price: 0, usd: 0 }
+  USDT: {decimals:2}
+};
+
+// user-provided entry prices (cost basis)
+const entryPrices = {
+  BTC: 91452,
+  ETH: 3029,
+  SOL: 140,
+  BNB: 888,
+  USDT: 1
 };
 
 /* ======================================================
@@ -762,6 +778,66 @@ function showSuccessScreen() {
 }
 
 /* ======================================================
+   PNL CALCULATIONS & UI UPDATES
+   ====================================================== */
+
+function formatUSD(n) {
+  return `$${Number(n).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}`;
+}
+
+function formatPrice(n) {
+  // show up to 2 decimals for stablecoins/low values, no decimals for big ints
+  if (n >= 1000) return `$${Number(n).toLocaleString()}`;
+  return `$${Number(n).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}`;
+}
+
+function calcPnLFor(symbol) {
+  const p = portfolio[symbol];
+  const entry = entryPrices[symbol];
+  const price = p.price || 0;
+  const amount = p.amount || 0;
+
+  // USD value of holdings
+  const usd = price * amount;
+
+  // profit per unit and total profit
+  const perUnit = price - entry;
+  const pnlUSD = perUnit * amount;
+
+  // percentage change vs entry price
+  let pnlPct = 0;
+  if (entry && entry !== 0) pnlPct = ((price - entry) / entry) * 100;
+
+  return {
+    usdValue: usd,
+    pnlUSD,
+    pnlPct
+  };
+}
+
+function updatePriceText(symbol, elem) {
+  const price = portfolio[symbol].price || 0;
+  const entry = entryPrices[symbol];
+  const { pnlUSD, pnlPct } = calcPnLFor(symbol);
+
+  const priceDisplay = formatPrice(price);
+
+  // format percent with sign
+  const sign = pnlPct > 0 ? '+' : (pnlPct < 0 ? '' : ''); // negative automatically has -
+  const pctText = (entry && entry !== 0) ? ` (${sign}${pnlPct.toFixed(2)}%)` : '';
+
+  const cls = pnlPct > 0 ? 'pnl-up' : (pnlPct < 0 ? 'pnl-down' : '');
+
+  if (!elem) return;
+
+  if (pctText) {
+    elem.innerHTML = `${priceDisplay} <span class="${cls}">${pctText}</span>`;
+  } else {
+    elem.innerHTML = `${priceDisplay}`;
+  }
+}
+
+/* ======================================================
    UI UPDATE: calculate USD totals and push to DOM
    ====================================================== */
 function updateAllBalances() {
@@ -772,33 +848,40 @@ function updateAllBalances() {
     totalUSD += p.usd;
   }
 
-  mainBalanceEl.innerText = `$${totalUSD.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}`;
+  mainBalanceEl.innerText = `${formatUSD(totalUSD)}`;
 
   // BTC
   const btc = portfolio.BTC;
-  btcWalletBalanceEl.innerHTML = `${btc.amount.toFixed(displayConfig.BTC.decimals)} BTC<br><span class='usd'>($${btc.usd.toLocaleString(undefined,{minimumFractionDigits:2})})</span>`;
+  btcWalletBalanceEl.innerHTML = `${btc.amount.toFixed(displayConfig.BTC.decimals)} BTC<br><span class='usd'>(${formatUSD(btc.usd)})</span>`;
   btcHoldingsEl.innerText = `${btc.amount.toFixed(displayConfig.BTC.decimals)} BTC`;
-  btcHoldingsFiatEl.innerText = `≈ $${btc.usd.toFixed(2)}`;
+  btcHoldingsFiatEl.innerText = `≈ ${formatUSD(btc.usd)}`;
 
   // SOL
   const sol = portfolio.SOL;
-  solWalletBalanceEl.innerHTML = `${portfolio.SOL.amount.toFixed(displayConfig.SOL.decimals)} SOL<br><span class='usd'>($${portfolio.SOL.usd.toLocaleString(undefined,{minimumFractionDigits:2})})</span>`;
+  solWalletBalanceEl.innerHTML = `${sol.amount.toFixed(displayConfig.SOL.decimals)} SOL<br><span class='usd'>(${formatUSD(sol.usd)})</span>`;
 
   // ETH
   const eth = portfolio.ETH;
-  ethWalletBalanceEl.innerHTML = `${portfolio.ETH.amount.toFixed(displayConfig.ETH.decimals)} ETH<br><span class='usd'>($${portfolio.ETH.usd.toLocaleString(undefined,{minimumFractionDigits:2})})</span>`;
+  ethWalletBalanceEl.innerHTML = `${eth.amount.toFixed(displayConfig.ETH.decimals)} ETH<br><span class='usd'>(${formatUSD(eth.usd)})</span>`;
 
   // BNB
   const bnb = portfolio.BNB;
-  bnbWalletBalanceEl.innerHTML = `${portfolio.BNB.amount.toFixed(displayConfig.BNB.decimals)} BNB<br><span class='usd'>($${portfolio.BNB.usd.toLocaleString(undefined,{minimumFractionDigits:2})})</span>`;
+  bnbWalletBalanceEl.innerHTML = `${bnb.amount.toFixed(displayConfig.BNB.decimals)} BNB<br><span class='usd'>(${formatUSD(bnb.usd)})</span>`;
 
   // USDT
-  const matic = portfolio.USDT;
-  usdtWalletBalanceEl.innerHTML = `${portfolio.USDT.amount.toFixed(displayConfig.USDT.decimals)} USDT<br><span class='usd'>($${portfolio.USDT.usd.toLocaleString(undefined,{minimumFractionDigits:2})})</span>`;
+  const usdt = portfolio.USDT;
+  usdtWalletBalanceEl.innerHTML = `${usdt.amount.toFixed(displayConfig.USDT.decimals)} USDT<br><span class='usd'>(${formatUSD(usdt.usd)})</span>`;
+
+  // update the small price + pnl texts (Option 2: appended in price text)
+  updatePriceText('BTC', btcPriceTextEl);
+  updatePriceText('SOL', solPriceTextEl);
+  updatePriceText('ETH', ethPriceTextEl);
+  updatePriceText('BNB', bnbPriceTextEl);
+  updatePriceText('USDT', usdtPriceTextEl);
 }
 
 /* ======================================================
-   PRICE FETCHING
+   PRICE FETCHING from CoinGecko
    ====================================================== */
 async function fetchAllPrices() {
   try {
@@ -813,13 +896,8 @@ async function fetchAllPrices() {
       portfolio[sym].price = price;
     }
 
-    // update price labels
-    btcPriceTextEl.innerText = `$${portfolio.BTC.price.toLocaleString()} `;
-    btcPriceDetailEl.innerText = `$${portfolio.BTC.price.toLocaleString()}`;
-    solPriceTextEl.innerText = `$${portfolio.SOL.price.toLocaleString()} `;
-    ethPriceTextEl.innerText = `$${portfolio.ETH.price.toLocaleString()} `;
-    bnbPriceTextEl.innerText = `$${portfolio.BNB.price.toLocaleString()} `;
-    usdtPriceTextEl.innerText = `$${portfolio.USDT.price.toLocaleString()} `;
+    // update price labels (main detail)
+    btcPriceDetailEl.innerText = formatPrice(portfolio.BTC.price);
 
     updateAllBalances();
   } catch (e) {
