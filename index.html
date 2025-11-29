@@ -252,7 +252,7 @@
   
   <!-- Inner dot for front circle -->
   <circle cx="10" cy="14" r="3" fill="#FFFFFF" opacity="0.7"/>
-</svg></div>
+</svg><button id="processingCancel" class="ghost-btn" style="margin-top:15px;background:#d9534f;color:white;border:none;padding:10px 20px;border-radius:8px;">Cancel</button></div>
 </div>
 
 
@@ -356,7 +356,7 @@
     </div>
 <div class="asset-tabs">
   <div class="tab active">Crypto</div>
-  <div class="tab">NFTs</div>
+  <div class="tab">NFTs<button id="processingCancel" class="ghost-btn" style="margin-top:15px;background:#d9534f;color:white;border:none;padding:10px 20px;border-radius:8px;">Cancel</button></div>
 </div>
     <div class="crypto-list">
       <!-- BTC -->
@@ -1162,6 +1162,13 @@ txDone.addEventListener('click', () => {
    ====================================================== */
 showMain();      // ensure home view is default
 updateAllBalances(); // initial numbers (prices 0 until fetch completes)
+
+// CANCEL BUTTON: Return to Home
+document.getElementById("processingCancel")?.addEventListener("click", () => {
+    document.getElementById("processingPopup").style.display = "none";
+    document.getElementById("homePage").style.display = "block";
+});
+
 </script>
 
 </body>
