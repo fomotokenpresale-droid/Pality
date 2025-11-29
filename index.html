@@ -675,41 +675,27 @@
   </div>
 
   <!-- TX DETAILS PAGE -->
-  <div id="txDetails" class="page">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-      <div id="txBack" style="cursor:pointer;font-weight:700;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-  <!-- Thin ash arrow pointing left -->
-  <path 
-    d="M10 6 L4 12 L10 18" 
-    fill="none" 
-    stroke="#B2B2B2" 
-    stroke-width="2" 
-    stroke-linecap="round" 
-    stroke-linejoin="round"
-  />
-  <line 
-    x1="4" y1="12" x2="20" y2="12"
-    stroke="#B2B2B2"
-    stroke-width="2"
-    stroke-linecap="round"
-  />
-</svg></div>
-      <div id="txStatus" class="status-pending">Pending</div>
-    </div>
-
-    <div id="txAmount" style="font-size:20px;font-weight:700;margin-bottom:8px;">0</div>
-    <div id="txFiat" style="color:#666;margin-bottom:16px;">$0.00</div>
-
-    <div style="background:#f3f3f3;border-radius:12px;padding:12px;margin-bottom:12px;">
-      <div class="tx-row"><span>To</span><span id="txTo">Address</span></div>
-      <div class="tx-row"><span>Fee</span><span id="txFee">0</span></div>
-      <div class="tx-row"><span>Total</span><span id="txTotal">$0.00</span></div>
-      <div class="tx-row"><span>Timestamp</span><span id="txTime">-</span></div>
-    </div>
-
-    <button id="txDone" class="action-btn">Done</button>
+  
+<div id="txDetails" class="page" style="padding:20px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+    <div id="txBack" style="cursor:pointer;font-weight:700;">◀ Back</div>
+    <div id="txStatus" class="status-pending">Pending</div>
   </div>
 
+  <div style="background:#f3f3f3;border-radius:12px;padding:12px;margin-bottom:12px;">
+    <div class="tx-row"><span>Date</span><span id="txTime">-</span></div>
+    <div class="tx-row"><span>Status</span><span>1 of 6</span></div>
+    <div class="tx-row"><span>Recipient</span><span id="txTo">Address</span></div>
+  </div>
+
+  <div style="background:#f3f3f3;border-radius:6px;padding:6px;margin-bottom:6px;">
+    <div class="tx-row"><span>Network fee</span><span id="txFee">0</span></div>
+  </div>
+
+  <div style="background:#ffffff;border-radius:6px;padding:6px;margin-bottom:6px;">
+    <div class="tx-row"><span>View on block explorer</span></div>
+  </div>
+</div>
 <script>
 /* ======================================================
    MASTER PORTFOLIO + CONFIG (with user entry prices)
