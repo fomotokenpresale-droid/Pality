@@ -718,31 +718,17 @@
 
 <script>
 
-function getTrustWalletDate() {
-    const now = new Date();
-    const tx = new Date();
-
-    const optionsTime = { hour: "numeric", minute: "numeric" };
-
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-
-    const txDay = new Date(tx.getFullYear(), tx.getMonth(), tx.getDate());
-
-    if (txDay.getTime() === today.getTime()) {
-        return "Today at " + tx.toLocaleTimeString([], optionsTime);
-    }
-
-    if (txDay.getTime() === yesterday.getTime()) {
-        return "Yesterday at " + tx.toLocaleTimeString([], optionsTime);
-    }
-
-    return tx.toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" }) +
-           " at " +
-           tx.toLocaleTimeString([], optionsTime);
+function formatTrustWalletDate() {
+  const d = new Date();
+  const now = new Date();
+  const isToday = d.toDateString() === now.toDateString();
+  let hours = d.getHours();
+  const minutes = d.getMinutes().toString().padStart(2,'0');
+  const ampm = hours>=12?'PM':'AM';
+  hours = hours%12 || 12;
+  if(isToday){ return `Today at ${hours}:${minutes} ${ampm}`; }
+  return `${d.toLocaleDateString()} at ${hours}:${minutes} ${ampm}`;
 }
-
 
 /* ======================================================
    MASTER PORTFOLIO + CONFIG (with user entry prices)
@@ -1172,7 +1158,7 @@ confirmBtn.addEventListener('click', () => {
     txTo.innerText = document.getElementById('confirmTo').innerText || '';
     txFee.innerText = feeText || '';
     txTotal.innerText = document.getElementById('confirmTotal').innerText || '';
-    txTime.innerText = new Date().toLocaleString();
+    txTime.innerText = formatTrustWalletDate();
 
     // hide processing and show success-screen only (no home overlap)
     processingPopup.style.display = 'none';
