@@ -479,16 +479,32 @@
     <div class="footer">
       <div><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
 
-  <!-- house -->
-  <g>
-    <!-- roof -->
-    <polygon points="24,6 6,20 10,20 10,34 38,34 38,20 42,20" fill="#1633FF"/>
+  <!-- gradient for the door -->
+  <defs>
+    <linearGradient id="doorGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <!-- light ash -->
+      <stop offset="0%" stop-color="#D3D3D8"/>
+      <!-- dark blue -->
+      <stop offset="100%" stop-color="#1633FF"/>
+    </linearGradient>
+  </defs>
 
-    <!-- door -->
-    <rect x="20.5" y="23" width="7" height="9" rx="0.8" fill="#FFFFFF"/>
+  <!-- house (scaled smaller) -->
+  <g transform="scale(0.8) translate(6, 6)">
+    <!-- roof aligned to walls -->
+    <polygon 
+      points="12,20 24,7 36,20" 
+      fill="#1633FF"
+    />
+
+    <!-- walls -->
+    <rect x="12" y="20" width="24" height="14" fill="#1633FF"/>
+
+    <!-- door extended down to bottom -->
+    <rect x="21" y="22" width="6" height="12" rx="0.8" fill="url(#doorGradient)"/>
   </g>
 
-  <!-- label (shifted upward to fit inside 48px height) -->
+  <!-- label -->
   <text x="24" y="46" font-family="Arial, Helvetica, sans-serif"
         font-size="7.2" text-anchor="middle" fill="#1633FF">
     Home
@@ -496,42 +512,52 @@
 
 </svg>
 </div>
-      <div><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
-  <!-- top arrow (right, wallet-style) -->
-  <g transform="translate(0,6)">
-    <!-- line -->
-    <path d="M10 14 L30 14" stroke="#8A8F95" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+      <div><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-labelledby="swapTitle" role="img">
+  <title id="swapTitle">Swap</title>
 
-    <!-- long, thin, wallet-style arrowhead -->
-    <polygon points="30,14 22,9 22,19" fill="#8A8F95"/>
+  <!-- TOP ARROW (shifted right) -->
+  <g transform="translate(3,0)" fill="none" stroke="#8A8F95" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 20 H32" />
+    <path d="M28 16 L32 20 L28 24" />
   </g>
 
-  <!-- bottom arrow (left, wallet-style) -->
-  <g transform="translate(0,18)">
-    <!-- line -->
-    <path d="M10 14 L30 14" stroke="#9EA3A8" stroke-width="3.2" stroke-linecap="round" fill="none"/>
-
-    <!-- long, thin, wallet-style arrowhead -->
-    <polygon points="10,14 18,9 18,19" fill="#9EA3A8"/>
+  <!-- BOTTOM ARROW (shifted right slightly) -->
+  <g transform="translate(-1,0)" fill="none" stroke="#C9CDD2" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M36 28 H16" />
+    <path d="M20 24 L16 28 L20 32" />
   </g>
 
-  <!-- label -->
-  <text x="24" y="45" font-family="Arial, Helvetica, sans-serif" font-size="7.2" text-anchor="middle" fill="#9EA3A8">Swap</text>
+  <!-- TEXT LABEL (expanded & lighter ash) -->
+  <text x="24" y="44" font-size="9" letter-spacing="1.2" text-anchor="middle"
+        fill="#C9CDD2" font-family="Arial, sans-serif">
+    Swap
+  </text>
+
 </svg>
 </div>
       <div><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
-  <!-- base / platform -->
-  <rect x="10" y="30" width="28" height="4" rx="2" fill="#8A8F95" />
 
-  <!-- coin / token -->
-  <g transform="translate(0,0)">
+  <!-- shorter base / platform with flat edges -->
+  <rect x="13" y="28" width="22" height="6" rx="0" fill="#8A8F95" />
+
+  <!-- coin / token moved downward to overlap the line -->
+  <g transform="translate(0,4)">
     <circle cx="24" cy="18" r="10" fill="#B7BFC6"/>
-    <!-- inner diamond -->
-    <rect x="22" y="14" width="4" height="4" transform="rotate(45 24 16)" fill="#F6F7F8"/>
+
+    <!-- centered white diamond -->
+    <rect
+      x="20" y="14"
+      width="8" height="8"
+      transform="rotate(45 24 18)"
+      fill="#FFFFFF"
+    />
   </g>
 
   <!-- label -->
-  <text x="24" y="45" font-family="Arial, Helvetica, sans-serif" font-size="7.2" text-anchor="middle" fill="#9EA3A8">Earn</text>
+  <text x="24" y="45" font-family="Arial, Helvetica, sans-serif"
+        font-size="7.2" text-anchor="middle" fill="#9EA3A8">
+    Earn
+  </text>
 </svg>
 </div>
       <div><svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
@@ -541,8 +567,8 @@
     <!-- Outer circle -->
     <circle cx="24" cy="18" r="10" fill="#A0A5AB"/>
 
-    <!-- Diamond / compass needle -->
-    <polygon points="24,13 27,18 24,23 21,18" fill="#60656B"/>
+    <!-- Extended diamond / compass needle -->
+    <polygon points="24,8 27,18 24,28 21,18" fill="#60656B"/>
 
     <!-- Tiny white circle -->
     <circle cx="24" cy="18" r="1.8" fill="#FFFFFF"/>
