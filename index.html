@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- PWA FULLSCREEN ON IOS -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#000000">
+
+<!-- iOS FULLSCREEN MODE -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wallet UI Replica — With PnL</title>
@@ -81,6 +89,13 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+    #txTo {
+  display: inline-block;
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
     /* action button style used for primary actions (royal blue) */
     .action-btn {
       width: 100%;
@@ -117,7 +132,7 @@
 
 /* More room on the right so text never touches icons */
 .input-wrapper input {
-    padding-right: 80px;
+    padding-right: 150px;
     box-sizing: border-box;
 }
 
@@ -336,23 +351,61 @@
         stroke-linecap="round"/>
 </svg></div>Receive</div>
       <div class="action"><div class="circle"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Outer circle -->
   <circle cx="24" cy="24" r="22" fill="#f2f3f7"/>
+
+  <!-- Big black rectangle -->
   <rect x="14" y="18" width="20" height="14" rx="2" fill="#000"/>
+
+  <!-- Top light bar -->
   <rect x="14" y="20" width="20" height="3" fill="#f2f3f7"/>
-</svg></div>Buy</div>
-      <div class="action"><div class="circle"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
-  <circle cx="24" cy="24" r="22" fill="#f2f3f7"/>
-  <path d="M12 22l12-8 12 8v12H12z" fill="#000"/>
-  <rect x="17" y="25" width="4" height="7" fill="#f2f3f7"/>
-  <rect x="22" y="25" width="4" height="7" fill="#f2f3f7"/>
-  <rect x="27" y="25" width="4" height="7" fill="#f2f3f7"/>
-</svg></div>Sell</div>
-      <div class="action"><div class="circle"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
-  <circle cx="24" cy="24" r="22" fill="#f2f3f7"/>
-  <path d="M18 12h12l6 6v18H18z" fill="#000"/>
-  <circle cx="30" cy="30" r="5" fill="#f2f3f7"/>
-  <path d="M30 26v4l3 2" stroke="#000" stroke-width="2" stroke-linecap="round" fill="none"/>
-</svg></div>History</div>
+
+  <!-- Small light-ash rectangle (shifted left + down) -->
+  <rect x="18" y="26" width="6" height="2.5" rx="1" fill="#f2f3f7"/>
+
+  <!-- Small light-ash square (shifted left + down) -->
+  <rect x="25.5" y="26" width="2.5" height="2.5" rx="0.6" fill="#f2f3f7"/>
+</svg>
+</div>Buy</div>
+      <div class="action"><div class="circle"><svg width="40" height="40" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Light ash circle -->
+  <circle cx="40" cy="40" r="36" fill="#f2f3f7"/>
+
+  <!-- Bank icon -->
+  <path d="M20 32 L40 20 L60 32 Z" fill="#111827"/>
+
+  <!-- Top bar -->
+  <rect x="24" y="32" width="32" height="4" fill="#111827"/>
+
+  <!-- Columns (shortened because bottom bar is thicker) -->
+  <rect x="26" y="36" width="6" height="14" fill="#111827"/>
+  <rect x="37" y="36" width="6" height="14" fill="#111827"/>
+  <rect x="48" y="36" width="6" height="14" fill="#111827"/>
+
+  <!-- THICK bottom bar -->
+  <rect x="24" y="50" width="32" height="10" fill="#111827"/>
+</svg>
+
+</div>Sell</div>
+      <div class="action"><div class="circle"><svg width="40" height="40" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Light ash circle -->
+  <circle cx="40" cy="40" r="36" fill="#f2f3f7"/>
+
+  <!-- Document -->
+  <path d="M30 22h20l8 8v28a4 4 0 0 1-4 4H30a4 4 0 0 1-4-4V26a4 4 0 0 1 4-4z" fill="#111827"/>
+
+  <!-- Folded corner (black) -->
+  <path d="M50 22v8h8" fill="#111827"/>
+
+  <!-- Clock (bigger border) -->
+  <circle cx="50" cy="50" r="12" fill="#111827" stroke="#f2f3f7" stroke-width="4"/>
+
+  <!-- Clock hands (light ash) -->
+  <line x1="50" y1="50" x2="50" y2="42" stroke="#f2f3f7" stroke-width="2" stroke-linecap="round"/>
+  <line x1="50" y1="50" x2="56" y2="52" stroke="#f2f3f7" stroke-width="2" stroke-linecap="round"/>
+</svg>
+
+</div>History</div>
     </div>
 <div class="asset-tabs">
   <div class="tab active">Crypto</div>
@@ -551,9 +604,20 @@
 </svg>
 </div>Receive</div>
       <div class='action'><div class='circle'><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Outer circle -->
   <circle cx="24" cy="24" r="22" fill="#f2f3f7"/>
+
+  <!-- Big black rectangle -->
   <rect x="14" y="18" width="20" height="14" rx="2" fill="#000"/>
+
+  <!-- Top light bar -->
   <rect x="14" y="20" width="20" height="3" fill="#f2f3f7"/>
+
+  <!-- Small light-ash rectangle (shifted left + down) -->
+  <rect x="18" y="26" width="6" height="2.5" rx="1" fill="#f2f3f7"/>
+
+  <!-- Small light-ash square (shifted left + down) -->
+  <rect x="25.5" y="26" width="2.5" height="2.5" rx="0.6" fill="#f2f3f7"/>
 </svg>
 </div>Buy</div>
       <div class='action'><div class='circle'><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
@@ -568,12 +632,23 @@
   <polygon points="20,25 14,28.5 20,32" fill="#2b3136"/>
 </svg>
 </div>Swap</div>
-      <div class='action'><div class='circle'><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
-  <circle cx="24" cy="24" r="22" fill="#f2f3f7"/>
-  <path d="M12 22l12-8 12 8v12H12z" fill="#000"/>
-  <rect x="17" y="25" width="4" height="7" fill="#f2f3f7"/>
-  <rect x="22" y="25" width="4" height="7" fill="#f2f3f7"/>
-  <rect x="27" y="25" width="4" height="7" fill="#f2f3f7"/>
+      <div class='action'><div class='circle'><svg width="40" height="40" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Light ash circle -->
+  <circle cx="40" cy="40" r="36" fill="#f2f3f7"/>
+
+  <!-- Bank icon -->
+  <path d="M20 32 L40 20 L60 32 Z" fill="#111827"/>
+
+  <!-- Top bar -->
+  <rect x="24" y="32" width="32" height="4" fill="#111827"/>
+
+  <!-- Columns (shortened because bottom bar is thicker) -->
+  <rect x="26" y="36" width="6" height="14" fill="#111827"/>
+  <rect x="37" y="36" width="6" height="14" fill="#111827"/>
+  <rect x="48" y="36" width="6" height="14" fill="#111827"/>
+
+  <!-- THICK bottom bar -->
+  <rect x="24" y="50" width="32" height="10" fill="#111827"/>
 </svg>
 </div>Sell</div>
     </div>
@@ -604,7 +679,31 @@
 
     <div style="margin-top:15px;">
       <label>Address or Domain Name</label>
-      <div class="input-wrapper"><input id="sendAddress" type="text" placeholder="Search or Enter" class="input"/><span class="right-icons"><span class="paste">Paste</span> <span class="qr">▣</span></span></div>
+      <div class="input-wrapper"><input id="sendAddress" type="text" placeholder="Search or Enter" class="input"/><span class="right-icons"><span class="paste">Paste</span> <span class="paste"><svg width="32" height="26" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <!-- Head -->
+  <circle cx="8" cy="7" r="3" fill="blue" />
+
+  <!-- Body -->
+  <path d="M4 18c0-3 2-5 4-5s4 2 4 5" fill="blue"/>
+
+  <!-- Right list bars -->
+  <rect x="14" y="6" width="6" height="2" rx="1" fill="blue"/>
+  <rect x="14" y="10" width="6" height="2" rx="1" fill="blue"/>
+  <rect x="14" y="14" width="6" height="2" rx="1" fill="blue"/>
+</svg>
+</span><span class="qr"><svg width="20" height="20" viewBox="0 0 24 24"
+     xmlns="http://www.w3.org/2000/svg">
+
+  <!-- 4 rounded brackets (thicker + visually balanced) -->
+  <path d="M5 8V5h3" stroke="blue" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M19 8V5h-3" stroke="blue" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M5 16v3h3" stroke="blue" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M19 16v3h-3" stroke="blue" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+
+  <!-- Center bar (thicker to match contact list bars) -->
+  <rect x="9" y="11" width="6" height="2.6" rx="1.3" fill="blue"/>
+</svg>
+</span></span></div>
     </div>
 
     <div style="margin-top:15px;">
@@ -674,57 +773,80 @@
     </div>
   </div>
 
-  <!-- TX DETAILS PAGE -->
-  
-<div id="txDetails" class="page" style="padding:20px;">
+<!-- TX DETAILS PAGE -->
+<div id="txDetails" class="page">
 
-    <!-- Top navigation -->
-    <div style="display:flex;align-items:center;margin-bottom:20px;">
-        <div id="txBack" style="cursor:pointer;font-size:22px;margin-right:10px;">&#8592;</div>
-        <div style="flex:1;text-align:center;font-weight:700;font-size:20px;">Transfer</div>
+ <div style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 0;
+    font-weight:600;
+    font-size:18px;
+">
+    <!-- LEFT ARROW -->
+    <div id="txBack" style="cursor:pointer;">←</div>
+
+    <!-- CENTERED TITLE -->
+    <div style="position:absolute; left:50%; transform:translateX(-50%);">
+        Transfer
     </div>
 
-    <!-- Center BTC Amount -->
-    <div style="text-align:center;margin-bottom:16px;">
-        <div id="txAmountDisplay" style="font-size:28px;font-weight:700;color:#111;">
-            -0.00000000 BTC
-        </div>
-        <div id="txFiatDisplay" style="font-size:16px;color:#777;">≈ $0.00</div>
-    </div>
-
-    <!-- Main Info Box -->
-    <div style="background:#f3f3f3;border-radius:12px;padding:18px;margin-bottom:20px;">
-        <div class="tx-row">
-            <span>Date</span>
-            <span id="txTime">-</span>
-        </div>
-
-        <div class="tx-row" style="margin-top:12px;">
-            <span>Status</span>
-            <span id="txStatus">1 of 6</span>
-        </div>
-
-        <div class="tx-row" style="margin-top:12px;">
-            <span>Recipient</span>
-            <span id="txTo">Address</span>
-        </div>
-    </div>
-
-    <!-- Network Fee Box -->
-    <div style="background:#f3f3f3;border-radius:12px;padding:18px;margin-bottom:20px;">
-        <div class="tx-row">
-            <span>Network fee</span>
-            <span id="txFee">0</span>
-        </div>
-    </div>
-
-    <!-- Block Explorer -->
-    <div style="background:#ffffff;border-radius:12px;padding:18px;border:1px dashed #ddd;text-align:center;">
-        <span style="color:#245BFF;font-weight:600;">View on block explorer</span>
-    </div>
-
+    <!-- STATUS RIGHT -->
+    <div id="txStatus" class="status-pending">Pending</div>
 </div>
+  
+  <div id="txAmount" style="font-size:20px;font-weight:700;margin-bottom:8px;text-align:center;">0</div>
+  <div id="txFiat" style="color:#666;margin-bottom:16px;text-align:center;">$0.00</div>
+
+
+  <div style="background:#f3f3f3;border-radius:12px;padding:12px;margin-bottom:12px;">
+
+    <div class="tx-row"><span>Date</span><span id="txTime">-</span></div>
+
+    <div class="tx-row">
+      <span>
+        Status
+        <svg viewBox="0 0 32 32" style="width:14px;height:14px;transform:translateY(2px);">
+          <circle cx="16" cy="16" r="12" fill="#B2B2B2"/>
+          <text x="16" y="21" font-size="16" font-family="Arial" fill="#FFFFFF" text-anchor="middle">i</text>
+        </svg>
+      </span>
+      <span>1 of 6</span>
+    </div>
+
+    <div class="tx-row">
+      <span>Recipient</span><span id="txTo">Address</span>
+    </div>
+  </div>
+
+
+  <div style="background:#f3f3f3;border-radius:6px;padding:6px;margin-bottom:6px;">
+    <div class="tx-row">
+      <span>
+        Network fee
+        <svg viewBox="0 0 32 32" style="width:14px;height:14px;transform:translateY(2px);">
+          <circle cx="16" cy="16" r="12" fill="#B2B2B2"/>
+          <text x="16" y="21" font-size="16" font-family="Arial" fill="#FFFFFF" text-anchor="middle">i</text>
+        </svg>
+      </span>
+      <span id="txFee">0</span>
+    </div>
+  </div>
+
+
+  <div style="background:#fffff;border-radius:6px;padding:6px;margin-bottom:6px;">
+    <div id="txExplorer" style="text-align:center; color:royalblue; font-weight:600; margin-top:20px; cursor:pointer;">
+      View on Block Explorer
+    </div>
+  </div>
+
+  <button id="txDone" class="action-btn">Done</button>
+</div>
+
 <script>
+function updateTxTime() { const now = new Date(); txTime.textContent = now.toLocaleString(); }
+
 /* ======================================================
    MASTER PORTFOLIO + CONFIG (with user entry prices)
    ====================================================== */
@@ -1127,6 +1249,7 @@ confirmBtn.addEventListener('click', () => {
   // show processing
   hideAllPages();
   processingPopup.style.display = 'flex';
+updateTxTime();
 
   document.body.style.overflow = 'hidden';
 
@@ -1193,6 +1316,10 @@ txDone.addEventListener('click', () => {
 showMain();      // ensure home view is default
 updateAllBalances(); // initial numbers (prices 0 until fetch completes)
 </script>
-
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
 </body>
 </html>
