@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- PWA FULLSCREEN ON IOS -->
-<link rel="manifest" href="manifest.json">
+ <!-- PWA FULLSCREEN -->
+<link rel="manifest" href="/Pality/manifest.json">
 <meta name="theme-color" content="#000000">
 
-<!-- iOS FULLSCREEN MODE -->
+<!-- iOS fullscreen -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
+
+<!-- App Icons -->
+<link rel="apple-touch-icon" sizes="192x192" href="/Pality/icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="/Pality/icons/icon-512.png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wallet UI Replica — With PnL</title>
@@ -1318,7 +1321,7 @@ updateAllBalances(); // initial numbers (prices 0 until fetch completes)
 </script>
 <script>
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js");
+  navigator.serviceWorker.register("/Pality/service-worker.js");
 }
 </script>
 </body>
